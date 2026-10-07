@@ -120,5 +120,8 @@
     "Assessment Period": "Assessment Period",
     "Create Period": "Create Period",
     "Period created.": "Period created.",
-    "All periods": "All periods"
+    "All periods": "All periods",
+    "Confirm Logout": "Confirm Logout",
+    "Are you sure you want to log out of your account?": "Are you sure you want to log out of your account?",
+    "Yes, Logout": "Yes, Logout"
 }

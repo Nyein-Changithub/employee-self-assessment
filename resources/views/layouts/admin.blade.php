@@ -29,10 +29,12 @@
     <title>@yield('title', __('Employee Self-Assessment'))</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-slate-100 text-slate-800 antialiased">
-    <div id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-slate-900/50 lg:hidden print:hidden"></div>
+<body class="min-h-screen bg-slate-100 text-slate-800 antialiased"
+      x-data="{ sidebar: false, logoutOpen: false }"
+      @keydown.escape.window="sidebar = false; logoutOpen = false">
+    <div x-show="sidebar" x-cloak x-transition.opacity @click="sidebar = false" class="fixed inset-0 z-30 bg-slate-900/50 lg:hidden print:hidden"></div>
 
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-slate-900 text-slate-300 transition-transform duration-200 lg:translate-x-0 print:hidden">
+    <aside id="sidebar" :class="{ '-translate-x-full': !sidebar }" class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-slate-900 text-slate-300 transition-transform duration-200 lg:translate-x-0 print:hidden">
         <a href="{{ route('admin.dashboard') }}" class="flex min-h-16 shrink-0 items-center gap-3 border-b border-slate-800 px-5 py-4">
             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-500 text-base font-bold text-white shadow-sm">E</span>
             <span class="min-w-0 text-sm font-semibold text-white {{ app()->getLocale() === 'mm' ? 'leading-relaxed' : 'leading-tight' }}">{{ __('Employee Self-Assessment') }}</span>
@@ -62,18 +64,17 @@
                     <div class="text-xs uppercase text-slate-400">{{ $user->role }}</div>
                 </div>
             </div>
-            <form method="POST" action="{{ route('admin.logout') }}">@csrf
-                <button class="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-slate-800 hover:text-white">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4M16 17l5-5-5-5M21 12H9"/></svg>
-                    {{ __('Log out') }}
-                </button>
-            </form>
+            <button type="button" @click="logoutOpen = true" class="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-slate-800 hover:text-white">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4M16 17l5-5-5-5M21 12H9"/></svg>
+                {{ __('Log out') }}
+            </button>
+            <form id="logout-form" method="POST" action="{{ route('admin.logout') }}" class="hidden">@csrf</form>
         </div>
     </aside>
 
     <div class="min-h-screen lg:pl-64 print:pl-0">
         <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 print:hidden">
-            <button type="button" data-sidebar-toggle aria-label="Menu" class="rounded-lg p-2 hover:bg-slate-100 lg:hidden">
+            <button type="button" @click="sidebar = !sidebar" :aria-expanded="sidebar" aria-label="Menu" class="rounded-lg p-2 hover:bg-slate-100 lg:hidden">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
             <span class="hidden text-sm text-slate-500 lg:block">{{ __('Welcome back') }}, <span class="font-medium text-slate-700">{{ $user->name }}</span></span>
@@ -87,16 +88,29 @@
     </div>
 
     @include('partials.ui')
-    <script>
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        const setSidebar = (open) => {
-            sidebar.classList.toggle('-translate-x-full', !open);
-            overlay.classList.toggle('hidden', !open);
-        };
-        document.querySelectorAll('[data-sidebar-toggle]').forEach((b) =>
-            b.addEventListener('click', () => setSidebar(sidebar.classList.contains('-translate-x-full'))));
-        overlay.addEventListener('click', () => setSidebar(false));
-    </script>
+    {{-- Logout confirmation --}}
+    <div x-show="logoutOpen" x-cloak x-effect="if (logoutOpen) $nextTick(() => $refs.logoutCancel.focus())"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 print:hidden"
+         role="dialog" aria-modal="true" aria-labelledby="logout-title">
+        <div x-show="logoutOpen" x-transition.opacity @click="logoutOpen = false" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+        <div x-show="logoutOpen"
+             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+             class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <div class="flex items-start gap-4">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4M16 17l5-5-5-5M21 12H9"/></svg>
+                </div>
+                <div>
+                    <h2 id="logout-title" class="text-lg font-semibold text-slate-900">{{ __('Confirm Logout') }}</h2>
+                    <p class="mt-1 text-sm text-slate-600">{{ __('Are you sure you want to log out of your account?') }}</p>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" x-ref="logoutCancel" @click="logoutOpen = false" class="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50">{{ __('Cancel') }}</button>
+                <button type="submit" form="logout-form" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">{{ __('Yes, Logout') }}</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

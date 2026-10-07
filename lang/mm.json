@@ -120,5 +120,8 @@
     "Assessment Period": "အကဲဖြတ်ကာလ",
     "Create Period": "ကာလအသစ် ဖန်တီးမည်",
     "Period created.": "အကဲဖြတ်ကာလအသစ် ဖန်တီးပြီးပါပြီ။",
-    "All periods": "ကာလအားလုံး"
+    "All periods": "ကာလအားလုံး",
+    "Confirm Logout": "ထွက်ခွာခြင်းကို အတည်ပြုပါ",
+    "Are you sure you want to log out of your account?": "သင့်အကောင့်မှ ထွက်ခွာရန် သေချာပါသလား။",
+    "Yes, Logout": "ဟုတ်ကဲ့၊ ထွက်မည်"
 }
