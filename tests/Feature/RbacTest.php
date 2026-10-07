@@ -223,7 +223,14 @@ class RbacTest extends TestCase
     {
         $this->actingAs($this->staff('admin'));
 
-        $this->get('/admin/roles')->assertOk()->assertSee('Built-in');
+        $this->get('/admin/roles')
+            ->assertOk()
+            ->assertSee('Built-in')
+            ->assertSee('ADMIN')
+            ->assertSee('CEO')
+            ->assertSee('GM')
+            ->assertSee('All permissions')
+            ->assertSee('7 permissions');
         $this->get('/admin/roles/create')->assertOk()->assertSee('submissions.view');
 
         $this->post('/admin/roles', ['name' => 'Reviewer', 'permissions' => ['submissions.view', 'dashboard.view']])->assertRedirect('/admin/roles');

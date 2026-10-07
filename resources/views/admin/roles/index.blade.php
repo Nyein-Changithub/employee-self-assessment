@@ -31,9 +31,9 @@
             @forelse ($roles as $role)
                 <tr class="hover:bg-slate-50">
                     <td class="px-4 py-3 text-slate-500">{{ $role->id }}</td>
-                    <td class="px-4 py-3 font-medium">{{ $role->name }} @if (\App\Support\Rbac::isBuiltInRole($role->name))<span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-xs font-normal text-slate-500">{{ __('Built-in') }}</span>@endif</td>
+                    <td class="px-4 py-3 font-medium">{{ \App\Support\Rbac::isBuiltInRole($role->name) ? mb_strtoupper($role->name) : $role->name }} @if (\App\Support\Rbac::isBuiltInRole($role->name))<span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-xs font-normal text-slate-500">{{ __('Built-in') }}</span>@endif</td>
                     <td class="px-4 py-3 text-slate-500">{{ $role->guard_name }}</td>
-                    <td class="px-4 py-3">{{ $role->name === 'admin' ? __('All') : $role->permissions_count }}</td>
+                    <td class="px-4 py-3">{{ $role->name === 'admin' ? __('All permissions') : trans_choice('{1} :count permission|[2,*] :count permissions', $role->permissions_count, ['count' => $role->permissions_count]) }}</td>
                     <td class="px-4 py-3">{{ $role->users_count }}</td>
                     <td class="whitespace-nowrap px-4 py-3 text-slate-500">{{ $role->created_at?->format('Y-m-d H:i') }}</td>
                     <td class="whitespace-nowrap px-4 py-3">

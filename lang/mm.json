@@ -160,6 +160,7 @@
     "The admin role always has every permission and cannot be edited.": "admin အခန်းကဏ္ဍတွင် ခွင့်ပြုချက်အားလုံး အမြဲရှိပြီး ပြင်ဆင်၍မရပါ။",
     "Administrators have every permission, including ones created later.": "စီမံခန့်ခွဲသူများတွင် နောက်မှဖန်တီးသော ခွင့်ပြုချက်များအပါအဝင် အားလုံးရှိသည်။",
     "All permissions": "ခွင့်ပြုချက်အားလုံး",
+    "{1} :count permission|[2,*] :count permissions": "ခွင့်ပြုချက် :count ခု",
     "None": "မရှိ",
     "e.g. HR Manager": "ဥပမာ - HR မန်နေဂျာ",
     "Use lowercase letters, numbers, dots, dashes or underscores only.": "အက်ဖာဗက်အသေး၊ ဂဏန်း၊ အစက်၊ တုံးတို သို့မဟုတ် underscore သာ အသုံးပြုပါ။",

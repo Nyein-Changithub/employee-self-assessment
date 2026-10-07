@@ -160,6 +160,7 @@
     "The admin role always has every permission and cannot be edited.": "The admin role always has every permission and cannot be edited.",
     "Administrators have every permission, including ones created later.": "Administrators have every permission, including ones created later.",
     "All permissions": "All permissions",
+    "{1} :count permission|[2,*] :count permissions": "{1} :count permission|[2,*] :count permissions",
     "None": "None",
     "e.g. HR Manager": "e.g. HR Manager",
     "Use lowercase letters, numbers, dots, dashes or underscores only.": "Use lowercase letters, numbers, dots, dashes or underscores only.",
