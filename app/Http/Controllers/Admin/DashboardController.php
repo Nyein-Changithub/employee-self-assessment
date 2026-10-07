@@ -16,11 +16,11 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard', [
             'stats' => [
-                ['label' => 'Assessment Periods', 'value' => AssessmentPeriod::count(), 'route' => 'admin.periods.index'],
-                ['label' => 'Submissions', 'value' => Assessment::where('status', 'submitted')->count(), 'route' => 'admin.assessments.index'],
-                ['label' => 'Employees', 'value' => User::where('role', 'employee')->count(), 'route' => 'admin.assessments.index'],
-                ['label' => 'Departments', 'value' => Department::count(), 'route' => 'admin.departments.index'],
-                ['label' => 'Positions', 'value' => Position::count(), 'route' => 'admin.positions.index'],
+                ['key' => 'periods', 'label' => 'Assessment Periods', 'value' => AssessmentPeriod::count(), 'route' => 'admin.periods.index'],
+                ['key' => 'submissions', 'label' => 'Submissions', 'value' => Assessment::where('status', 'submitted')->count(), 'route' => 'admin.assessments.index'],
+                ['key' => 'employees', 'label' => 'Employees', 'value' => User::where('role', 'employee')->count(), 'route' => 'admin.assessments.index'],
+                ['key' => 'departments', 'label' => 'Departments', 'value' => Department::count(), 'route' => 'admin.departments.index'],
+                ['key' => 'positions', 'label' => 'Positions', 'value' => Position::count(), 'route' => 'admin.positions.index'],
             ],
             'recent' => Assessment::with(['user', 'period'])->where('status', 'submitted')->latest('submitted_at')->limit(5)->get(),
             'periods' => AssessmentPeriod::withCount('assessments')->latest()->limit(5)->get(),
