@@ -33,10 +33,10 @@
     <div id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-slate-900/50 lg:hidden print:hidden"></div>
 
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-slate-900 text-slate-300 transition-transform duration-200 lg:translate-x-0 print:hidden">
-        <div class="flex h-14 shrink-0 items-center gap-2 border-b border-slate-800 px-5">
-            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500 text-sm font-bold text-white">E</span>
-            <span class="font-semibold text-white">{{ __('Employee Self-Assessment') }}</span>
-        </div>
+        <a href="{{ route('admin.dashboard') }}" class="flex min-h-16 shrink-0 items-center gap-3 border-b border-slate-800 px-5 py-4">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-500 text-base font-bold text-white shadow-sm">E</span>
+            <span class="min-w-0 text-sm font-semibold text-white {{ app()->getLocale() === 'mm' ? 'leading-relaxed' : 'leading-tight' }}">{{ __('Employee Self-Assessment') }}</span>
+        </a>
 
         <nav class="flex-1 space-y-5 overflow-y-auto px-3 py-4">
             @foreach ($nav as $section => $items)
@@ -72,7 +72,7 @@
     </aside>
 
     <div class="min-h-screen lg:pl-64 print:pl-0">
-        <header class="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 print:hidden">
+        <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 print:hidden">
             <button type="button" data-sidebar-toggle aria-label="Menu" class="rounded-lg p-2 hover:bg-slate-100 lg:hidden">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
