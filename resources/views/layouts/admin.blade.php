@@ -90,7 +90,7 @@
 
     <div class="min-h-screen lg:pl-64 print:pl-0">
         <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 print:hidden">
-            <button type="button" @click="sidebar = !sidebar" :aria-expanded="sidebar" aria-label="Menu" class="rounded-lg p-2 hover:bg-slate-100 lg:hidden">
+            <button type="button" @click="sidebar = !sidebar" :aria-expanded="sidebar" aria-label="{{ __('Menu') }}" class="rounded-lg p-2 hover:bg-slate-100 lg:hidden">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
             <span class="hidden text-sm text-slate-500 lg:block">{{ __('Welcome back') }}, <span class="font-medium text-slate-700">{{ $user->name }}</span></span>

@@ -65,7 +65,11 @@ class AssessmentController extends Controller
         foreach ($questions as $question) {
             $rules["answers.{$question->id}"] = ['required', 'string', 'max:10000'];
         }
-        $data = $request->validate($rules);
+        $attributes = [];
+        foreach ($questions as $i => $question) {
+            $attributes["answers.{$question->id}"] = __('Question :number', ['number' => $i + 1]);
+        }
+        $data = $request->validate($rules, [], $attributes);
 
         $user = $this->findUser($data);
 

@@ -36,7 +36,7 @@
                 <td class="p-3 whitespace-nowrap">{{ $a->submitted_at?->format('Y-m-d H:i') }}</td>
                 <td class="p-3 whitespace-nowrap space-x-3">
                     <a href="{{ route('admin.assessments.show', $a) }}" class="text-indigo-600 hover:underline">{{ __('View') }}</a>
-                    <a href="{{ route('admin.assessments.pdf', $a) }}" class="text-indigo-600 hover:underline">PDF</a>
+                    <a href="{{ route('admin.assessments.pdf', $a) }}" class="text-indigo-600 hover:underline">{{ __('PDF') }}</a>
                 </td>
             </tr>
         @empty
