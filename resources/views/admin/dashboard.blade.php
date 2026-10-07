@@ -23,6 +23,9 @@
             <div class="min-w-0">
                 <div class="break-words text-sm leading-tight text-slate-500">{{ __($stat['label']) }}</div>
                 <div class="mt-1 text-3xl font-semibold text-slate-900">{{ number_format($stat['value']) }}</div>
+                @isset ($stat['hint'])
+                    <div class="mt-0.5 text-xs text-slate-500">{{ __(':count active', ['count' => $stat['hint']]) }}</div>
+                @endisset
             </div>
             <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl {{ $t['icon'] }} transition-transform duration-300 group-hover:scale-110 motion-reduce:transition-none">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ $t['path'] }}"/></svg>
@@ -56,17 +59,19 @@
     </section>
 
     <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-300 ease-in-out hover:shadow-lg">
-        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-3">
-            <h2 class="font-semibold">{{ __('Assessment Periods') }}</h2>
-            <a href="{{ route('admin.periods.index') }}" class="text-sm text-indigo-600 hover:underline">{{ __('View all') }}</a>
+        <div class="flex items-center justify-between gap-2 border-b border-slate-200 px-5 py-3">
+            <h2 class="font-semibold">{{ __('Active Assessment Periods') }} <span class="ml-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">{{ $activePeriods }}</span></h2>
+            <a href="{{ route('admin.periods.index') }}" class="shrink-0 text-sm text-indigo-600 hover:underline">{{ __('View all') }}</a>
         </div>
         <ul class="divide-y divide-slate-100 text-sm">
-            @foreach ($periods as $c)
+            @forelse ($periods as $c)
                 <li class="flex items-center justify-between gap-3 px-5 py-3">
-                    <span class="truncate font-medium">{{ $c->title }}</span>
-                    <span class="shrink-0 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">{{ $c->assessments_count }}</span>
+                    <a href="{{ route('admin.assessments.index', ['period' => $c->id]) }}" class="min-w-0 truncate font-medium hover:text-indigo-600">{{ $c->title }}</a>
+                    <span class="shrink-0 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700" title="{{ __('Submissions') }}">{{ $c->submitted_assessments_count }}</span>
                 </li>
-            @endforeach
+            @empty
+                <li class="px-5 py-8 text-center text-slate-500">{{ __('No active periods.') }}</li>
+            @endforelse
         </ul>
     </section>
 </div>

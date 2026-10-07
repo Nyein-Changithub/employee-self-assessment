@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Assessment;
 use App\Models\AssessmentPeriod;
 use App\Models\Department;
 use App\Models\Position;
@@ -167,5 +168,52 @@ class AssessmentFlowTest extends TestCase
         $this->get('/admin/positions?sort=name_en&dir=desc&per_page=10')->assertOk();
         // hostile sort / wildcard input must not break the query
         $this->get('/admin/positions?sort=password;drop&dir=x&search=%25')->assertOk()->assertSee('No results found.');
+    }
+
+    public function test_dashboard_metrics_are_accurate(): void
+    {
+        $this->admin();
+        $base = [
+            'periods' => \App\Models\AssessmentPeriod::count(),
+            'active' => \App\Models\AssessmentPeriod::where('is_active', true)->count(),
+            'submitted' => \App\Models\Assessment::where('status', 'submitted')->count(),
+            'employees' => User::where('role', 'employee')->count(),
+            'departments' => Department::count(),
+            'positions' => Position::count(),
+        ];
+
+        $inactive = AssessmentPeriod::create(['title' => 'Old', 'slug' => 'old-period-xyz', 'is_active' => false]);
+        $mk = fn ($i) => User::create(['name' => "Emp $i", 'email' => "emp$i-metric@x.com", 'role' => 'employee', 'department' => 'ZZ Test Dept']);
+        $make = fn ($period, $user, $status) => Assessment::create([
+            'assessment_period_id' => $period->id, 'user_id' => $user->id, 'status' => $status,
+            'submitted_at' => $status === 'submitted' ? now()->addMinutes($user->id) : null,
+        ]);
+        $make($this->period, $mk(1), 'submitted');
+        $make($this->period, $mk(2), 'submitted');
+        $make($this->period, $mk(3), 'draft');          // drafts must never be counted
+        $make($inactive, $mk(4), 'submitted');
+
+        $res = $this->get('/admin')->assertOk();
+        $stats = collect($res->viewData('stats'))->keyBy('key');
+
+        $this->assertSame($base['periods'] + 1, $stats['periods']['value']);       // baseline already has the setUp period; +inactive
+        $this->assertSame($base['active'], $stats['periods']['hint']);             // the inactive period must not raise the active count
+        $this->assertSame($base['submitted'] + 3, $stats['submissions']['value']); // 2 + 1, no draft
+        $this->assertSame($base['employees'] + 4, $stats['employees']['value']);
+        $this->assertSame($base['departments'], $stats['departments']['value']);
+        $this->assertSame($base['positions'], $stats['positions']['value']);
+
+        $periods = $res->viewData('periods')->keyBy('id');
+        $this->assertSame(2, $periods[$this->period->id]->submitted_assessments_count); // draft excluded
+        $this->assertFalse($periods->has($inactive->id));                                // inactive period not listed
+
+        $recent = $res->viewData('recent');
+        $this->assertTrue($recent->every(fn ($a) => $a->status === 'submitted'));
+        $this->assertTrue($recent->first()->relationLoaded('user') && $recent->first()->relationLoaded('period'));
+        $times = $recent->map(fn ($a) => $a->submitted_at->toDateTimeString())->all();
+        $sorted = $times;
+        rsort($sorted);
+        $this->assertSame($sorted, $times);   // newest first
+        $res->assertSee('Emp 4')->assertSee('Old');   // newest submission (user 4, inactive period) is listed with its period title
     }
 }

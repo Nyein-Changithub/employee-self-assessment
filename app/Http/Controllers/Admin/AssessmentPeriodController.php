@@ -13,7 +13,7 @@ class AssessmentPeriodController extends Controller
     public function index(): View
     {
         return view('admin.periods.index', [
-            'periods' => AssessmentPeriod::withCount(['questions', 'assessments'])->latest()->get(),
+            'periods' => AssessmentPeriod::withCount(['questions', 'submittedAssessments'])->latest()->get(),
         ]);
     }
 

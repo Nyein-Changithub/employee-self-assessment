@@ -131,5 +131,8 @@
     "Close": "ပိတ်မည်",
     "Home": "ပင်မစာမျက်နှာ",
     "Create": "ဖန်တီးမည်",
-    "Breadcrumb": "လမ်းကြောင်း"
+    "Breadcrumb": "လမ်းကြောင်း",
+    ":count active": ":count ခု အသုံးပြုနေသည်",
+    "Active Assessment Periods": "လက်ရှိအကဲဖြတ်ကာလများ",
+    "No active periods.": "လက်ရှိအသုံးပြုနေသော ကာလ မရှိပါ။"
 }

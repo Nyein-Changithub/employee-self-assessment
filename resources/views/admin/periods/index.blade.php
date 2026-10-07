@@ -12,7 +12,7 @@
             <div class="flex flex-wrap items-start justify-between gap-2">
                 <div>
                     <h2 class="font-semibold text-lg">{{ $period->title }}</h2>
-                    <p class="text-xs text-slate-500 mt-1">{{ __('Questions') }}: {{ $period->questions_count }} · {{ __('Submissions') }}: {{ $period->assessments_count }}</p>
+                    <p class="text-xs text-slate-500 mt-1">{{ __('Questions') }}: {{ $period->questions_count }} · {{ __('Submissions') }}: {{ $period->submitted_assessments_count }}</p>
                 </div>
                 <div class="flex gap-2 text-sm">
                     <a href="{{ route('admin.questions.index', $period) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 hover:bg-slate-50">{{ __('Manage Questions') }}</a>
