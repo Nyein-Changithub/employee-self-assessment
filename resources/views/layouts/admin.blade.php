@@ -30,8 +30,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-800 antialiased"
-      x-data="{ sidebar: false, logoutOpen: false }"
-      @keydown.escape.window="sidebar = false; logoutOpen = false">
+      x-data="{ sidebar: false, logoutOpen: false, profileOpen: false }"
+      @keydown.escape.window="sidebar = false; logoutOpen = false; profileOpen = false">
     <div x-show="sidebar" x-cloak x-transition.opacity @click="sidebar = false" class="fixed inset-0 z-30 bg-slate-900/50 lg:hidden print:hidden"></div>
 
     <aside id="sidebar" :class="{ '-translate-x-full': !sidebar }" class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-slate-900 text-slate-300 transition-transform duration-200 lg:translate-x-0 print:hidden">
@@ -57,12 +57,15 @@
         </nav>
 
         <div class="border-t border-slate-800 p-3">
-            <div class="flex items-center gap-3 px-2 py-2">
+            <button type="button" @click="profileOpen = true" aria-haspopup="dialog" title="{{ __('View profile') }}"
+                    class="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-slate-800">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-700 text-sm font-semibold text-white">{{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}</span>
-                <div class="min-w-0">
-                    <div class="truncate text-sm font-medium text-white">{{ $user->name }}</div>
-                    <div class="text-xs uppercase text-slate-400">{{ $user->role }}</div>
-                </div>
+                <span class="min-w-0 flex-1">
+                    <span class="block truncate text-sm font-medium text-white">{{ $user->name }}</span>
+                    <span class="block text-xs uppercase text-slate-400">{{ $user->roleName() }}</span>
+                </span>
+                <svg class="h-4 w-4 shrink-0 text-slate-500" viewBox="0 0 20 20" fill="currentColor"><path d="M7.3 4.3a1 1 0 0 1 1.4 0l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4-1.4L11.6 10 7.3 5.7a1 1 0 0 1 0-1.4z"/></svg>
+            </button>
             </div>
             <button type="button" @click="logoutOpen = true" class="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-slate-800 hover:text-white">
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -88,6 +91,51 @@
     </div>
 
     @include('partials.ui')
+    {{-- Profile --}}
+    <div x-show="profileOpen" x-cloak x-effect="if (profileOpen) $nextTick(() => $refs.profileClose.focus())"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 print:hidden"
+         role="dialog" aria-modal="true" aria-labelledby="profile-title">
+        <div x-show="profileOpen" x-transition.opacity @click="profileOpen = false" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+        <div x-show="profileOpen"
+             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+             class="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
+            <div class="h-24 bg-gradient-to-r from-indigo-600 to-violet-500"></div>
+            <button type="button" @click="profileOpen = false" aria-label="{{ __('Close') }}" class="absolute right-3 top-3 rounded-full p-1.5 text-white/80 hover:bg-white/20 hover:text-white">
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M4.3 4.3a1 1 0 0 1 1.4 0L10 8.6l4.3-4.3a1 1 0 1 1 1.4 1.4L11.4 10l4.3 4.3a1 1 0 0 1-1.4 1.4L10 11.4l-4.3 4.3a1 1 0 0 1-1.4-1.4L8.6 10 4.3 5.7a1 1 0 0 1 0-1.4z"/></svg>
+            </button>
+            <div class="px-6 pb-6">
+                <div class="-mt-10 flex items-start gap-4">
+                    <span class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full border-4 border-white bg-indigo-600 text-3xl font-semibold text-white shadow">{{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}</span>
+                    <div class="min-w-0 pt-11">
+                        <h2 id="profile-title" class="truncate text-lg font-semibold text-slate-900">{{ $user->name }}</h2>
+                        <span class="inline-flex rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium uppercase text-indigo-700">{{ $user->roleName() }}</span>
+                    </div>
+                </div>
+
+                <dl class="mt-6 divide-y divide-slate-100 text-sm">
+                    @foreach ([
+                        __('Full Name') => $user->name,
+                        __('Email Address') => $user->email,
+                        __('Role') => $user->roleName(),
+                        __('Department') => $user->department,
+                        __('Position') => $user->position,
+                        __('Account Created') => $user->created_at?->format('Y-m-d'),
+                    ] as $label => $value)
+                        <div class="flex items-start justify-between gap-4 py-2.5">
+                            <dt class="shrink-0 text-slate-500">{{ $label }}</dt>
+                            <dd class="min-w-0 break-words text-right font-medium text-slate-800">{{ $value ?: '—' }}</dd>
+                        </div>
+                    @endforeach
+                </dl>
+
+                <div class="mt-6 flex justify-end">
+                    <button type="button" x-ref="profileClose" @click="profileOpen = false" class="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50">{{ __('Close') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Logout confirmation --}}
     <div x-show="logoutOpen" x-cloak x-effect="if (logoutOpen) $nextTick(() => $refs.logoutCancel.focus())"
          class="fixed inset-0 z-50 flex items-center justify-center p-4 print:hidden"

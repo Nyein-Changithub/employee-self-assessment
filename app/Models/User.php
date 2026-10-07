@@ -29,6 +29,11 @@ class User extends Authenticatable
         return $this->hasMany(Assessment::class);
     }
 
+    public function roleName(): string
+    {
+        return (string) $this->role;
+    }
+
     public function isAdminRole(): bool
     {
         return in_array($this->role, self::ADMIN_ROLES, true);

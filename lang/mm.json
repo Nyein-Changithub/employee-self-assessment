@@ -123,5 +123,10 @@
     "All periods": "ကာလအားလုံး",
     "Confirm Logout": "ထွက်ခွာခြင်းကို အတည်ပြုပါ",
     "Are you sure you want to log out of your account?": "သင့်အကောင့်မှ ထွက်ခွာရန် သေချာပါသလား။",
-    "Yes, Logout": "ဟုတ်ကဲ့၊ ထွက်မည်"
+    "Yes, Logout": "ဟုတ်ကဲ့၊ ထွက်မည်",
+    "View profile": "ပရိုဖိုင်ကြည့်မည်",
+    "Email Address": "အီးမေးလ်လိပ်စာ",
+    "Role": "အခန်းကဏ္ဍ",
+    "Account Created": "အကောင့်ဖွင့်သည့်ရက်",
+    "Close": "ပိတ်မည်"
 }
