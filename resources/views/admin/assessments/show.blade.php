@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', $assessment->user->name)
 @section('content')
 <div class="flex flex-wrap items-center justify-between gap-2 print:hidden">

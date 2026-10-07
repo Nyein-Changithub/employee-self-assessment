@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CycleController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\LookupController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Middleware\SetLocaleMiddleware;
@@ -29,6 +31,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login.attempt');
 
     Route::middleware(['auth', 'role:ceo,gm,admin'])->group(function () {
+        Route::get('/', DashboardController::class)->name('dashboard');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
         Route::get('/cycles', [CycleController::class, 'index'])->name('cycles.index');
@@ -38,6 +41,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/cycles/{cycle}/questions', [QuestionController::class, 'store'])->name('questions.store');
         Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
         Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+
+        foreach (['departments', 'positions'] as $type) {
+            Route::get("/{$type}", [LookupController::class, 'index'])->defaults('type', $type)->name("{$type}.index");
+            Route::get("/{$type}/create", [LookupController::class, 'create'])->defaults('type', $type)->name("{$type}.create");
+            Route::post("/{$type}", [LookupController::class, 'store'])->defaults('type', $type)->name("{$type}.store");
+            Route::get("/{$type}/{id}", [LookupController::class, 'show'])->defaults('type', $type)->name("{$type}.show");
+            Route::get("/{$type}/{id}/edit", [LookupController::class, 'edit'])->defaults('type', $type)->name("{$type}.edit");
+            Route::put("/{$type}/{id}", [LookupController::class, 'update'])->defaults('type', $type)->name("{$type}.update");
+            Route::delete("/{$type}/{id}", [LookupController::class, 'destroy'])->defaults('type', $type)->name("{$type}.destroy");
+        }
 
         Route::get('/assessments', [AdminAssessmentController::class, 'index'])->name('assessments.index');
         // Export routes must be declared before the {assessment} wildcard.

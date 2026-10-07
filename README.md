@@ -6,6 +6,7 @@ A lightweight, enterprise-ready Employee Self-Assessment web application built w
 
 - **Passwordless Employee Form Access:** Direct URL form submission (`/assessment/{slug}`) with auto-locking upon submission.
 - **Dynamic Questions CRUD:** Admins can manage custom evaluation questions and guide texts dynamically, per assessment cycle.
+- **Managed Dropdowns:** Admins maintain Department and Position lists (English + Myanmar names) that feed the employee form.
 - **Dual Language Support:** Seamless toggling between **Myanmar (မြန်မာ)** and **English**.
 - **Admin / CEO / GM Dashboard:** Secure Email/Password authentication for executive oversight and response viewing.
 - **Multi-format Exports:** Export assessment data to **Excel (.xlsx)**, **CSV**, and printable **PDF**.
@@ -69,7 +70,7 @@ DB_PASSWORD=your-strong-password
 ### Migrate, seed and run
 
 ```bash
-php artisan migrate --seed
+php artisan migrate --seed   # also seeds sample departments and positions
 npm run build        # or `npm run dev` during development
 php artisan serve
 ```
@@ -90,7 +91,7 @@ The app is now available at <http://localhost:8000>.
 
 ### Employees
 1. Open the assessment link shared by HR, e.g. `/assessment/2026-q1`.
-2. Fill in Name, Employee ID, Email, Position and Department, then answer every question.
+2. Fill in Name, Employee ID, Position and Department (Email is optional), then answer every question.
 3. Submit. The form locks and a read-only copy of the answers is shown. Submitting again for the same cycle shows the banner *"You have already submitted this assessment form."*
 
 ### Admin / CEO / GM
@@ -100,6 +101,8 @@ Log in at `/admin/login` (roles `admin`, `ceo`, `gm` only).
 |----------------------------------------|------------------------------------------------------|
 | `/admin/cycles`                        | Create assessment cycles, get employee links         |
 | `/admin/cycles/{cycle}/questions`      | Add, edit and delete dynamic questions (EN / MM)     |
+| `/admin/departments`                   | Manage Department dropdown options (EN / MM)         |
+| `/admin/positions`                     | Manage Position dropdown options (EN / MM)           |
 | `/admin/assessments`                   | List submissions, filter by cycle / department       |
 | `/admin/assessments/{id}`              | Printable detailed view                              |
 | `/admin/assessments/{id}/pdf`          | Download PDF                                         |

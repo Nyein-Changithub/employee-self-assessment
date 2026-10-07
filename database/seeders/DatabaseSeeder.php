@@ -10,7 +10,9 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::updateOrCreate(['email' => 'admin@example.com'], [
+        $this->call(LookupSeeder::class);
+
+        User::firstOrCreate(['email' => 'admin@example.com'], [
             'name' => 'Admin',
             'password' => 'password', // change after first login
             'role' => 'admin',

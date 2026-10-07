@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 @section('title', $cycle->title)
 @section('content')
 <div class="flex items-center justify-between">
