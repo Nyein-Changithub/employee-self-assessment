@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable;
 
-    public const ADMIN_ROLES = ['ceo', 'gm', 'admin'];
 
     protected $fillable = [
         'employee_id', 'name', 'email', 'password', 'position', 'department', 'role',
@@ -29,13 +29,41 @@ class User extends Authenticatable
         return $this->hasMany(Assessment::class);
     }
 
-    public function roleName(): string
+    /** Staff = anyone holding at least one role; they may sign in to the admin portal. */
+    public function isStaff(): bool
     {
-        return (string) $this->role;
+        return $this->roles->isNotEmpty();
     }
 
-    public function isAdminRole(): bool
+    public function roleName(): string
     {
-        return in_array($this->role, self::ADMIN_ROLES, true);
+        return $this->roles->pluck('name')->join(', ') ?: 'employee';
+    }
+
+    /** Keep the legacy users.role column in step with the assigned Spatie role. */
+    public function syncRoleColumn(): void
+    {
+        $this->forceFill(['role' => $this->roles()->orderBy('name')->value('name') ?? 'employee'])->saveQuietly();
+    }
+
+    /** First admin page this user may open (used after login and for the 403 fallback). */
+    public function homeRoute(): ?string
+    {
+        foreach ([
+            'dashboard.view' => 'admin.dashboard',
+            'submissions.view' => 'admin.assessments.index',
+            'periods.manage' => 'admin.periods.index',
+            'departments.manage' => 'admin.departments.index',
+            'positions.manage' => 'admin.positions.index',
+            'users.manage' => 'admin.users.index',
+            'roles.manage' => 'admin.roles.index',
+            'permissions.manage' => 'admin.permissions.index',
+        ] as $permission => $route) {
+            if ($this->can($permission)) {
+                return $route;
+            }
+        }
+
+        return null;
     }
 }

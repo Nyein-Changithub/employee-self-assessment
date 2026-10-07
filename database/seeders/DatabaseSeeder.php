@@ -10,13 +10,14 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call(LookupSeeder::class);
+        $this->call([RbacSeeder::class, LookupSeeder::class]);
 
-        User::firstOrCreate(['email' => 'admin@example.com'], [
+        $admin = User::firstOrCreate(['email' => 'admin@example.com'], [
             'name' => 'Admin',
             'password' => 'password', // change after first login
             'role' => 'admin',
         ]);
+        $admin->assignRole('admin');
 
         $period = AssessmentPeriod::firstOrCreate(['slug' => '2026-q1'], ['title' => '2026 Q1 Assessment']);
 

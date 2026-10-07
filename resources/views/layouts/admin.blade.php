@@ -5,20 +5,33 @@
         'document' => 'M7 3h8l4 4v14H7zM15 3v4h4M10 13h6M10 17h6',
         'building' => 'M4 21V5l8-2v18M12 9h8v12M7 9h2M7 13h2M7 17h2M15 13h2M15 17h2M3 21h18',
         'briefcase' => 'M3 8h18v12H3zM8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3M3 13h18',
+        'users' => 'M17 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM21 20v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',
+        'shield' => 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4',
+        'key' => 'M21 2l-2 2m-7.6 7.6a5 5 0 1 1-7 7 5 5 0 0 1 7-7zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4',
     ];
+    // [label, route, active route patterns, icon, required permission]
     $nav = [
         __('Overview') => [
-            [__('Dashboard'), 'admin.dashboard', ['admin.dashboard'], 'home'],
+            [__('Dashboard'), 'admin.dashboard', ['admin.dashboard'], 'home', 'dashboard.view'],
         ],
         __('Assessments') => [
-            [__('Assessment Periods'), 'admin.periods.index', ['admin.periods.*', 'admin.questions.*'], 'clipboard'],
-            [__('Submissions'), 'admin.assessments.index', ['admin.assessments.*'], 'document'],
+            [__('Assessment Periods'), 'admin.periods.index', ['admin.periods.*', 'admin.questions.*'], 'clipboard', 'periods.manage'],
+            [__('Submissions'), 'admin.assessments.index', ['admin.assessments.*'], 'document', 'submissions.view'],
         ],
         __('Master Data') => [
-            [__('Departments'), 'admin.departments.index', ['admin.departments.*'], 'building'],
-            [__('Positions'), 'admin.positions.index', ['admin.positions.*'], 'briefcase'],
+            [__('Departments'), 'admin.departments.index', ['admin.departments.*'], 'building', 'departments.manage'],
+            [__('Positions'), 'admin.positions.index', ['admin.positions.*'], 'briefcase', 'positions.manage'],
+        ],
+        __('Access Control') => [
+            [__('Users'), 'admin.users.index', ['admin.users.*'], 'users', 'users.manage'],
+            [__('Roles'), 'admin.roles.index', ['admin.roles.*'], 'shield', 'roles.manage'],
+            [__('Permissions'), 'admin.permissions.index', ['admin.permissions.*'], 'key', 'permissions.manage'],
         ],
     ];
+    // Hide links (and empty sections) the signed-in user may not open.
+    $nav = collect($nav)
+        ->map(fn ($items) => collect($items)->filter(fn ($i) => auth()->user()->can($i[4]))->all())
+        ->filter()->all();
     $user = auth()->user();
 @endphp
 <!DOCTYPE html>
@@ -35,7 +48,7 @@
     <div x-show="sidebar" x-cloak x-transition.opacity @click="sidebar = false" class="fixed inset-0 z-30 bg-slate-900/50 lg:hidden print:hidden"></div>
 
     <aside id="sidebar" :class="{ '-translate-x-full': !sidebar }" class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-slate-900 text-slate-300 transition-transform duration-200 lg:translate-x-0 print:hidden">
-        <a href="{{ route('admin.dashboard') }}" class="flex min-h-16 shrink-0 items-center gap-3 border-b border-slate-800 px-5 py-4">
+        <a href="{{ route(auth()->user()->homeRoute() ?? 'admin.login') }}" class="flex min-h-16 shrink-0 items-center gap-3 border-b border-slate-800 px-5 py-4">
             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-500 text-base font-bold text-white shadow-sm">E</span>
             <span class="min-w-0 text-sm font-semibold text-white {{ app()->getLocale() === 'mm' ? 'leading-relaxed' : 'leading-tight' }}">{{ __('Employee Self-Assessment') }}</span>
         </a>
@@ -44,7 +57,7 @@
             @foreach ($nav as $section => $items)
                 <div>
                     <div class="mb-1 px-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $section }}</div>
-                    @foreach ($items as [$label, $route, $patterns, $icon])
+                    @foreach ($items as [$label, $route, $patterns, $icon, $perm])
                         @php $active = request()->routeIs(...$patterns); @endphp
                         <a href="{{ route($route) }}"
                            class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors {{ $active ? 'bg-indigo-600 text-white' : 'hover:bg-slate-800 hover:text-white' }}">

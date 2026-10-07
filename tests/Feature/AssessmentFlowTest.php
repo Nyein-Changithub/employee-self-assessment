@@ -9,6 +9,7 @@ use App\Models\Position;
 use App\Models\User;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Database\Seeders\RbacSeeder;
 use Tests\TestCase;
 
 /**
@@ -24,6 +25,7 @@ class AssessmentFlowTest extends TestCase
     {
         parent::setUp();
         $this->withoutMiddleware(PreventRequestForgery::class);
+        $this->seed(RbacSeeder::class);
 
         $this->period = AssessmentPeriod::create(['title' => 'T', 'slug' => 'test-period-xyz']);
         $this->period->questions()->create(['question_en' => 'Q1', 'question_mm' => 'Q1mm', 'order_no' => 1]);
@@ -103,13 +105,14 @@ class AssessmentFlowTest extends TestCase
 
     public function test_admin_cannot_be_used_on_employee_form(): void
     {
-        User::create(['name' => 'Boss', 'employee_id' => 'TEST-ADM', 'email' => 'boss@x.com', 'role' => 'ceo', 'password' => 'secret123']);
+        User::create(['name' => 'Boss', 'employee_id' => 'TEST-ADM', 'email' => 'boss@x.com', 'role' => 'ceo', 'password' => 'secret123'])->assignRole('ceo');
         $this->submit(['employee_id' => 'TEST-ADM', 'email' => 'boss@x.com'])->assertSessionHasErrors('employee_id');
     }
 
     private function admin(): User
     {
         $admin = User::create(['name' => 'Ad', 'email' => 'ad-test@x.com', 'role' => 'admin', 'password' => 'secret123']);
+        $admin->assignRole('admin');
         $this->actingAs($admin);
 
         return $admin;

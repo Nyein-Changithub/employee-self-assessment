@@ -151,7 +151,7 @@ class AssessmentController extends Controller
 
         $user = $byId ?? $byEmail;
 
-        if ($user && $user->role !== 'employee') {
+        if ($user && ($user->isStaff() || $user->role !== 'employee')) {
             throw ValidationException::withMessages([
                 'employee_id' => __('This Employee ID cannot be used for the assessment form.'),
             ]);

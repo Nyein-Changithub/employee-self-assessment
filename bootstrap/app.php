@@ -1,10 +1,12 @@
 <?php
 
-use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\EnsureStaff;
 use App\Http\Middleware\SetLocaleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,7 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [SetLocaleMiddleware::class]);
-        $middleware->alias(['role' => RoleMiddleware::class]);
+        $middleware->alias([
+            'staff' => EnsureStaff::class,
+            'role' => RoleMiddleware::class,
+            'permission' => PermissionMiddleware::class,
+        ]);
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {

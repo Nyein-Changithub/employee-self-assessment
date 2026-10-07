@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +30,7 @@ class AuthController extends Controller
             [
                 'email' => $credentials['email'],
                 'password' => $credentials['password'],
-                fn ($query) => $query->whereIn('role', User::ADMIN_ROLES),
+                fn ($query) => $query->whereHas('roles'),
             ],
             $request->boolean('remember')
         );
@@ -41,9 +40,21 @@ class AuthController extends Controller
                 ->onlyInput('email');
         }
 
+        $home = Auth::user()->homeRoute();
+
+        // A role with no permissions at all has nowhere to land.
+        if (! $home) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors(['email' => __('Your account has no permissions assigned. Contact an administrator.')])
+                ->onlyInput('email');
+        }
+
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin.dashboard'));
+        return redirect()->intended(route($home));
     }
 
     public function logout(Request $request): RedirectResponse
