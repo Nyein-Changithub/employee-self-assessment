@@ -24,7 +24,7 @@
                 @forelse ($recent as $a)
                     <tr class="hover:bg-slate-50">
                         <td class="px-5 py-3"><div class="font-medium">{{ $a->user->name }}</div><div class="text-xs text-slate-500">{{ $a->user->department }}</div></td>
-                        <td class="px-5 py-3 text-slate-600">{{ $a->cycle->title }}</td>
+                        <td class="px-5 py-3 text-slate-600">{{ $a->period->title }}</td>
                         <td class="whitespace-nowrap px-5 py-3 text-slate-500">{{ $a->submitted_at?->format('Y-m-d H:i') }}</td>
                         <td class="px-5 py-3 text-right"><a href="{{ route('admin.assessments.show', $a) }}" class="rounded-lg border border-slate-300 px-3 py-1 hover:bg-slate-100">{{ __('View') }}</a></td>
                     </tr>
@@ -38,11 +38,11 @@
 
     <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div class="flex items-center justify-between border-b border-slate-200 px-5 py-3">
-            <h2 class="font-semibold">{{ __('Cycles') }}</h2>
-            <a href="{{ route('admin.cycles.index') }}" class="text-sm text-indigo-600 hover:underline">{{ __('View all') }}</a>
+            <h2 class="font-semibold">{{ __('Assessment Periods') }}</h2>
+            <a href="{{ route('admin.periods.index') }}" class="text-sm text-indigo-600 hover:underline">{{ __('View all') }}</a>
         </div>
         <ul class="divide-y divide-slate-100 text-sm">
-            @foreach ($cycles as $c)
+            @foreach ($periods as $c)
                 <li class="flex items-center justify-between gap-3 px-5 py-3">
                     <span class="truncate font-medium">{{ $c->title }}</span>
                     <span class="shrink-0 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">{{ $c->assessments_count }}</span>

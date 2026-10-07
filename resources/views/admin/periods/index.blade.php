@@ -1,19 +1,19 @@
 @extends('layouts.admin')
 @section('content')
-<h1 class="text-xl font-semibold">{{ __('Cycles') }}</h1>
+<h1 class="text-xl font-semibold">{{ __('Assessment Periods') }}</h1>
 
 <div class="space-y-4">
-    @foreach ($cycles as $cycle)
-        @php $link = url('/assessment/'.$cycle->slug); @endphp
+    @foreach ($periods as $period)
+        @php $link = url('/assessment/'.$period->slug); @endphp
         <div class="bg-white rounded-xl shadow-sm p-5 space-y-4">
             <div class="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                    <h2 class="font-semibold text-lg">{{ $cycle->title }}</h2>
-                    <p class="text-xs text-slate-500 mt-1">{{ __('Questions') }}: {{ $cycle->questions_count }} · {{ __('Submissions') }}: {{ $cycle->assessments_count }}</p>
+                    <h2 class="font-semibold text-lg">{{ $period->title }}</h2>
+                    <p class="text-xs text-slate-500 mt-1">{{ __('Questions') }}: {{ $period->questions_count }} · {{ __('Submissions') }}: {{ $period->assessments_count }}</p>
                 </div>
                 <div class="flex gap-2 text-sm">
-                    <a href="{{ route('admin.questions.index', $cycle) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 hover:bg-slate-50">{{ __('Manage Questions') }}</a>
-                    <a href="{{ route('admin.assessments.index', ['cycle' => $cycle->id]) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 hover:bg-slate-50">{{ __('Submissions') }}</a>
+                    <a href="{{ route('admin.questions.index', $period) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 hover:bg-slate-50">{{ __('Manage Questions') }}</a>
+                    <a href="{{ route('admin.assessments.index', ['period' => $period->id]) }}" class="rounded-lg border border-slate-300 px-3 py-1.5 hover:bg-slate-50">{{ __('Submissions') }}</a>
                 </div>
             </div>
 
@@ -34,7 +34,7 @@
     @endforeach
 </div>
 
-<form method="POST" action="{{ route('admin.cycles.store') }}" class="bg-white rounded-xl shadow-sm p-4 grid sm:grid-cols-3 gap-3 items-end">
+<form method="POST" action="{{ route('admin.periods.store') }}" class="bg-white rounded-xl shadow-sm p-4 grid sm:grid-cols-3 gap-3 items-end">
     @csrf
     <div>
         <label class="block text-sm font-medium mb-1">{{ __('Title') }}</label>
@@ -46,6 +46,6 @@
         <input name="slug" value="{{ old('slug') }}" required placeholder="2026-q2" class="w-full rounded-lg border border-slate-300 px-3 py-2">
         @error('slug')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
     </div>
-    <button class="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">{{ __('Create Cycle') }}</button>
+    <button class="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2">{{ __('Create Period') }}</button>
 </form>
 @endsection

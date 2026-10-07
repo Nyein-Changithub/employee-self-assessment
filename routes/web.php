@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentController;
 use App\Http\Controllers\Admin\AuthController;
-use App\Http\Controllers\Admin\CycleController;
+use App\Http\Controllers\Admin\AssessmentPeriodController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LookupController;
 use App\Http\Controllers\Admin\QuestionController;
@@ -34,11 +34,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', DashboardController::class)->name('dashboard');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-        Route::get('/cycles', [CycleController::class, 'index'])->name('cycles.index');
-        Route::post('/cycles', [CycleController::class, 'store'])->name('cycles.store');
+        Route::get('/assessment-periods', [AssessmentPeriodController::class, 'index'])->name('periods.index');
+        Route::post('/assessment-periods', [AssessmentPeriodController::class, 'store'])->name('periods.store');
 
-        Route::get('/cycles/{cycle}/questions', [QuestionController::class, 'index'])->name('questions.index');
-        Route::post('/cycles/{cycle}/questions', [QuestionController::class, 'store'])->name('questions.store');
+        Route::get('/assessment-periods/{period}/questions', [QuestionController::class, 'index'])->name('questions.index');
+        Route::post('/assessment-periods/{period}/questions', [QuestionController::class, 'store'])->name('questions.store');
         Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
         Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 

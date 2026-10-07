@@ -13,7 +13,7 @@
     </style>
 </head>
 <body>
-    <h1>{{ $assessment->cycle->title }}</h1>
+    <h1>{{ $assessment->period->title }}</h1>
     <div>Submitted at: {{ $assessment->submitted_at?->format('Y-m-d H:i') }}</div>
     <table>
         <tr><td class="label">Name</td><td>{{ $assessment->user->name }}</td><td class="label">Employee ID</td><td>{{ $assessment->user->employee_id }}</td></tr>

@@ -11,7 +11,7 @@
             [__('Dashboard'), 'admin.dashboard', ['admin.dashboard'], 'home'],
         ],
         __('Assessments') => [
-            [__('Cycles'), 'admin.cycles.index', ['admin.cycles.*', 'admin.questions.*'], 'clipboard'],
+            [__('Assessment Periods'), 'admin.periods.index', ['admin.periods.*', 'admin.questions.*'], 'clipboard'],
             [__('Submissions'), 'admin.assessments.index', ['admin.assessments.*'], 'document'],
         ],
         __('Master Data') => [

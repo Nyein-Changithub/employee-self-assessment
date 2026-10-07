@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assessment;
-use App\Models\AssessmentCycle;
+use App\Models\AssessmentPeriod;
 use App\Models\Department;
 use App\Models\Position;
 use App\Models\User;
@@ -19,31 +19,31 @@ class AssessmentController extends Controller
 {
     public function show(string $slug): View
     {
-        $cycle = AssessmentCycle::where('slug', $slug)->firstOrFail();
+        $period = AssessmentPeriod::where('slug', $slug)->firstOrFail();
 
         // Read-only view: only for the assessment this browser session submitted.
         $assessmentId = session('submitted_assessment_id');
         if ($assessmentId) {
             $assessment = Assessment::with(['user', 'answers.question'])
                 ->where('id', $assessmentId)
-                ->where('assessment_cycle_id', $cycle->id)
+                ->where('assessment_period_id', $period->id)
                 ->where('status', 'submitted')
                 ->first();
 
             if ($assessment) {
                 return view('assessment.readonly', [
-                    'cycle' => $cycle,
+                    'period' => $period,
                     'assessment' => $assessment,
                     'answers' => $assessment->answers->sortBy('question.order_no'),
                 ]);
             }
         }
 
-        abort_unless($cycle->is_active, 404);
+        abort_unless($period->is_active, 404);
 
         return view('assessment.form', [
-            'cycle' => $cycle,
-            'questions' => $cycle->questions()->where('is_active', true)->get(),
+            'period' => $period,
+            'questions' => $period->questions()->where('is_active', true)->get(),
             'departments' => Department::where('is_active', true)->orderBy('name_en')->get(),
             'positions' => Position::where('is_active', true)->orderBy('name_en')->get(),
         ]);
@@ -51,8 +51,8 @@ class AssessmentController extends Controller
 
     public function submit(Request $request, string $slug): RedirectResponse
     {
-        $cycle = AssessmentCycle::where('slug', $slug)->firstOrFail();
-        $questions = $cycle->questions()->where('is_active', true)->get();
+        $period = AssessmentPeriod::where('slug', $slug)->firstOrFail();
+        $questions = $period->questions()->where('is_active', true)->get();
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
@@ -71,7 +71,7 @@ class AssessmentController extends Controller
 
         $existing = $user
             ? Assessment::where('user_id', $user->id)
-                ->where('assessment_cycle_id', $cycle->id)
+                ->where('assessment_period_id', $period->id)
                 ->where('status', 'submitted')
                 ->first()
             : null;
@@ -89,15 +89,15 @@ class AssessmentController extends Controller
                 ->with('already_submitted', true);
         }
 
-        abort_unless($cycle->is_active, 404);
+        abort_unless($period->is_active, 404);
 
         // Profile is only written once we know this is a genuine new submission.
         $user = $this->saveProfile($user, $data);
 
         try {
-            $assessment = DB::transaction(function () use ($user, $cycle, $questions, $data) {
+            $assessment = DB::transaction(function () use ($user, $period, $questions, $data) {
                 $assessment = Assessment::create([
-                    'assessment_cycle_id' => $cycle->id,
+                    'assessment_period_id' => $period->id,
                     'user_id' => $user->id,
                     'status' => 'submitted',
                     'submitted_at' => now(),
@@ -115,7 +115,7 @@ class AssessmentController extends Controller
         } catch (UniqueConstraintViolationException) {
             // Concurrent double-submit: the other request won.
             $assessment = Assessment::where('user_id', $user->id)
-                ->where('assessment_cycle_id', $cycle->id)->firstOrFail();
+                ->where('assessment_period_id', $period->id)->firstOrFail();
             session(['submitted_assessment_id' => $assessment->id]);
 
             return redirect()->route('assessment.show', $slug)->with('already_submitted', true);

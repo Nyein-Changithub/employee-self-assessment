@@ -9,7 +9,7 @@
     </div>
 </div>
 <div class="bg-white rounded-xl shadow-sm p-6">
-    <h1 class="text-xl font-semibold">{{ $assessment->cycle->title }}</h1>
+    <h1 class="text-xl font-semibold">{{ $assessment->period->title }}</h1>
     <p class="text-sm text-slate-500">{{ __('Submitted at') }}: {{ $assessment->submitted_at?->format('Y-m-d H:i') }}</p>
 </div>
 @include('partials.readonly-body', ['assessment' => $assessment, 'answers' => $answers])

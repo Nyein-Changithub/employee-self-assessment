@@ -5,7 +5,7 @@ A lightweight, enterprise-ready Employee Self-Assessment web application built w
 ## Key Features
 
 - **Passwordless Employee Form Access:** Direct URL form submission (`/assessment/{slug}`) with auto-locking upon submission.
-- **Dynamic Questions CRUD:** Admins can manage custom evaluation questions and guide texts dynamically, per assessment cycle.
+- **Dynamic Questions CRUD:** Admins can manage custom evaluation questions and guide texts dynamically, per assessment period.
 - **Managed Dropdowns:** Admins maintain Department and Position lists (English + Myanmar names) that feed the employee form.
 - **Dual Language Support:** Seamless toggling between **Myanmar (မြန်မာ)** and **English**.
 - **Admin / CEO / GM Dashboard:** Secure Email/Password authentication for executive oversight and response viewing.
@@ -82,7 +82,7 @@ The app is now available at <http://localhost:8000>.
 | Item            | Value                                         |
 |-----------------|-----------------------------------------------|
 | Admin login     | `admin@example.com` / `password`              |
-| Sample cycle    | `2026-q1` with 3 sample questions             |
+| Sample period    | `2026-q1` with 3 sample questions             |
 | Employee form   | <http://localhost:8000/assessment/2026-q1>    |
 
 > **Change the seeded admin password immediately** and never deploy with the default credentials.
@@ -92,24 +92,24 @@ The app is now available at <http://localhost:8000>.
 ### Employees
 1. Open the assessment link shared by HR, e.g. `/assessment/2026-q1`.
 2. Fill in Name, Employee ID, Position and Department (Email is optional), then answer every question.
-3. Submit. The form locks and a read-only copy of the answers is shown. Submitting again for the same cycle shows the banner *"You have already submitted this assessment form."*
+3. Submit. The form locks and a read-only copy of the answers is shown. Submitting again for the same period shows the banner *"You have already submitted this assessment form."*
 
 ### Admin / CEO / GM
 Log in at `/admin/login` (roles `admin`, `ceo`, `gm` only).
 
 | Page                                   | Purpose                                              |
 |----------------------------------------|------------------------------------------------------|
-| `/admin/cycles`                        | Create assessment cycles, get employee links         |
-| `/admin/cycles/{cycle}/questions`      | Add, edit and delete dynamic questions (EN / MM)     |
+| `/admin/assessment-periods`                        | Create assessment periods, get employee links         |
+| `/admin/assessment-periods/{period}/questions`      | Add, edit and delete dynamic questions (EN / MM)     |
 | `/admin/departments`                   | Manage Department dropdown options (EN / MM)         |
 | `/admin/positions`                     | Manage Position dropdown options (EN / MM)           |
-| `/admin/assessments`                   | List submissions, filter by cycle / department       |
+| `/admin/assessments`                   | List submissions, filter by period / department       |
 | `/admin/assessments/{id}`              | Printable detailed view                              |
 | `/admin/assessments/{id}/pdf`          | Download PDF                                         |
 | `/admin/assessments/export/excel`      | Export list to `.xlsx`                               |
 | `/admin/assessments/export/csv`        | Export list to `.csv`                                |
 
-When a single cycle is selected in the filter, exports include one column per question.
+When a single period is selected in the filter, exports include one column per question.
 
 ### Creating additional admin / CEO / GM users
 
@@ -130,11 +130,11 @@ php artisan tinker
 
 ```
 app/Http/Controllers/AssessmentController.php        Employee form + submission
-app/Http/Controllers/Admin/                          Auth, Cycles, Questions, Assessments
+app/Http/Controllers/Admin/                          Auth, Periods, Questions, Assessments
 app/Http/Middleware/SetLocaleMiddleware.php          Session-based locale
 app/Http/Middleware/RoleMiddleware.php               role:ceo,gm,admin guard
 app/Exports/AssessmentsExport.php                    Excel / CSV export
-database/migrations/                                 users, cycles, questions, assessments, answers
+database/migrations/                                 users, periods, questions, assessments, answers
 resources/views/                                     Blade templates (Tailwind)
 routes/web.php                                       All routes
 ```

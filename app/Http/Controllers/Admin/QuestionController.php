@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AssessmentCycle;
+use App\Models\AssessmentPeriod;
 use App\Models\Question;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,28 +12,28 @@ use Illuminate\View\View;
 
 class QuestionController extends Controller
 {
-    public function index(AssessmentCycle $cycle): View
+    public function index(AssessmentPeriod $period): View
     {
         return view('admin.questions.index', [
-            'cycle' => $cycle,
-            'questions' => $cycle->questions,
-            'nextOrder' => ($cycle->questions()->max('order_no') ?? 0) + 1,
+            'period' => $period,
+            'questions' => $period->questions,
+            'nextOrder' => ($period->questions()->max('order_no') ?? 0) + 1,
         ]);
     }
 
-    public function store(Request $request, AssessmentCycle $cycle): RedirectResponse
+    public function store(Request $request, AssessmentPeriod $period): RedirectResponse
     {
-        $data = $this->validated($request, $cycle->id);
-        $data['order_no'] ??= ($cycle->questions()->max('order_no') ?? 0) + 1;
+        $data = $this->validated($request, $period->id);
+        $data['order_no'] ??= ($period->questions()->max('order_no') ?? 0) + 1;
 
-        $cycle->questions()->create($data);
+        $period->questions()->create($data);
 
         return back()->with('status', __('Question added.'));
     }
 
     public function update(Request $request, Question $question): RedirectResponse
     {
-        $question->update($this->validated($request, $question->assessment_cycle_id, $question->id));
+        $question->update($this->validated($request, $question->assessment_period_id, $question->id));
 
         return back()->with('status', __('Question updated.'));
     }
@@ -45,14 +45,14 @@ class QuestionController extends Controller
         return back()->with('status', __('Question deleted.'));
     }
 
-    private function validated(Request $request, int $cycleId, ?int $ignoreId = null): array
+    private function validated(Request $request, int $periodId, ?int $ignoreId = null): array
     {
         $data = $request->validate([
             'question_en' => ['required', 'string', 'max:5000'],
             'question_mm' => ['required', 'string', 'max:5000'],
             'order_no' => [
                 'nullable', 'integer', 'min:1',
-                Rule::unique('questions', 'order_no')->where('assessment_cycle_id', $cycleId)->ignore($ignoreId),
+                Rule::unique('questions', 'order_no')->where('assessment_period_id', $periodId)->ignore($ignoreId),
             ],
             'is_active' => ['nullable', 'boolean'],
         ], [

@@ -8,16 +8,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Assessment extends Model
 {
-    protected $fillable = ['assessment_cycle_id', 'user_id', 'status', 'submitted_at'];
+    protected $fillable = ['assessment_period_id', 'user_id', 'status', 'submitted_at'];
 
     protected function casts(): array
     {
         return ['submitted_at' => 'datetime'];
     }
 
-    public function cycle(): BelongsTo
+    public function period(): BelongsTo
     {
-        return $this->belongsTo(AssessmentCycle::class, 'assessment_cycle_id');
+        return $this->belongsTo(AssessmentPeriod::class, 'assessment_period_id');
     }
 
     public function user(): BelongsTo

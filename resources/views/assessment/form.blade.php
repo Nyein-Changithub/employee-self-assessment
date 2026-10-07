@@ -1,15 +1,15 @@
 @extends('layouts.app')
-@section('title', $cycle->title)
+@section('title', $period->title)
 @section('content')
 @php
     $input = 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none';
 @endphp
 <div class="bg-white rounded-xl border-t-8 border-indigo-600 shadow-sm p-6">
-    <h1 class="text-2xl font-semibold">{{ $cycle->title }}</h1>
+    <h1 class="text-2xl font-semibold">{{ $period->title }}</h1>
     <p class="text-sm text-slate-500 mt-1">{{ __('Once submitted, your answers cannot be changed.') }}</p>
 </div>
 
-<form method="POST" action="{{ route('assessment.submit', $cycle->slug) }}" class="space-y-4">
+<form method="POST" action="{{ route('assessment.submit', $period->slug) }}" class="space-y-4">
     @csrf
     <section class="bg-white rounded-xl shadow-sm p-6 space-y-4">
         <h2 class="font-semibold">{{ __('Your Details') }}</h2>

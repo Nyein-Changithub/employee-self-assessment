@@ -1,9 +1,9 @@
 @extends('layouts.admin')
-@section('title', $cycle->title)
+@section('title', $period->title)
 @section('content')
 <div class="flex items-center justify-between">
-    <h1 class="text-xl font-semibold">{{ $cycle->title }} — {{ __('Questions') }}</h1>
-    <a href="{{ route('admin.cycles.index') }}" class="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 px-4 py-2 text-sm">← {{ __('Back') }}</a>
+    <h1 class="text-xl font-semibold">{{ $period->title }} — {{ __('Questions') }}</h1>
+    <a href="{{ route('admin.periods.index') }}" class="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 px-4 py-2 text-sm">← {{ __('Back') }}</a>
 </div>
 
 @if ($errors->any())
@@ -48,13 +48,13 @@
     <p class="text-slate-500">{{ __('No questions yet.') }}</p>
 @endforelse
 
-<form method="POST" action="{{ route('admin.questions.store', $cycle) }}" class="bg-white rounded-xl shadow-sm p-4 space-y-3">
+<form method="POST" action="{{ route('admin.questions.store', $period) }}" class="bg-white rounded-xl shadow-sm p-4 space-y-3">
     @csrf
     <h2 class="font-semibold">{{ __('Add Question') }}</h2>
     @include('admin.questions._fields', ['q' => null])
     <div class="flex items-center gap-3">
         <button class="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm">{{ __('Add Question') }}</button>
-        <a href="{{ route('admin.cycles.index') }}" class="rounded-lg border border-slate-300 hover:bg-slate-50 px-4 py-2 text-sm">{{ __('Back') }}</a>
+        <a href="{{ route('admin.periods.index') }}" class="rounded-lg border border-slate-300 hover:bg-slate-50 px-4 py-2 text-sm">{{ __('Back') }}</a>
     </div>
 </form>
 @endsection

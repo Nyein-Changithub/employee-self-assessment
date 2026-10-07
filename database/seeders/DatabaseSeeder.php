@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\AssessmentCycle;
+use App\Models\AssessmentPeriod;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        $cycle = AssessmentCycle::firstOrCreate(['slug' => '2026-q1'], ['title' => '2026 Q1 Assessment']);
+        $period = AssessmentPeriod::firstOrCreate(['slug' => '2026-q1'], ['title' => '2026 Q1 Assessment']);
 
-        if ($cycle->questions()->doesntExist()) {
-            $cycle->questions()->createMany([
+        if ($period->questions()->doesntExist()) {
+            $period->questions()->createMany([
                 [
                     'question_en' => 'What were your key achievements this quarter?',
                     'question_mm' => 'ဤသုံးလပတ်အတွင်း သင်၏ အဓိကအောင်မြင်မှုများမှာ အဘယ်နည်း။',

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\AssessmentCycle;
+use App\Models\AssessmentPeriod;
 use App\Models\Department;
 use App\Models\Position;
 use App\Models\User;
@@ -17,22 +17,22 @@ class AssessmentFlowTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private AssessmentCycle $cycle;
+    private AssessmentPeriod $period;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->withoutMiddleware(PreventRequestForgery::class);
 
-        $this->cycle = AssessmentCycle::create(['title' => 'T', 'slug' => 'test-cycle-xyz']);
-        $this->cycle->questions()->create(['question_en' => 'Q1', 'question_mm' => 'Q1mm', 'order_no' => 1]);
+        $this->period = AssessmentPeriod::create(['title' => 'T', 'slug' => 'test-period-xyz']);
+        $this->period->questions()->create(['question_en' => 'Q1', 'question_mm' => 'Q1mm', 'order_no' => 1]);
         Department::create(['name_en' => 'ZZ Test Dept', 'name_mm' => 'ZZ-dept-mm']);
         Position::create(['name_en' => 'ZZ Test Pos', 'name_mm' => 'ZZ-pos-mm']);
     }
 
     private function payload(array $override = []): array
     {
-        $q = $this->cycle->questions()->first();
+        $q = $this->period->questions()->first();
 
         return array_merge([
             'name' => 'Aung Aung',
@@ -46,28 +46,28 @@ class AssessmentFlowTest extends TestCase
 
     private function submit(array $override = [])
     {
-        return $this->post("/assessment/{$this->cycle->slug}/submit", $this->payload($override));
+        return $this->post("/assessment/{$this->period->slug}/submit", $this->payload($override));
     }
 
     public function test_form_renders_dropdowns_in_both_languages(): void
     {
-        $this->get("/assessment/{$this->cycle->slug}")
+        $this->get("/assessment/{$this->period->slug}")
             ->assertOk()->assertSee('<option value="ZZ Test Dept"', false)->assertSee('ZZ Test Pos');
 
-        $this->withSession(['locale' => 'mm'])->get("/assessment/{$this->cycle->slug}")
+        $this->withSession(['locale' => 'mm'])->get("/assessment/{$this->period->slug}")
             ->assertOk()->assertSee('ZZ-dept-mm')->assertSee('ZZ-pos-mm');
     }
 
     public function test_email_is_optional_and_submission_is_locked(): void
     {
-        $this->submit()->assertRedirect("/assessment/{$this->cycle->slug}")->assertSessionHas('just_submitted');
+        $this->submit()->assertRedirect("/assessment/{$this->period->slug}")->assertSessionHas('just_submitted');
 
         $user = User::where('employee_id', 'TEST-9001')->firstOrFail();
         $this->assertNull($user->email);
         $this->assertSame('ZZ Test Dept', $user->department);
         $this->assertSame(1, $user->assessments()->count());
 
-        $this->get("/assessment/{$this->cycle->slug}")->assertOk()->assertSee('My answer');
+        $this->get("/assessment/{$this->period->slug}")->assertOk()->assertSee('My answer');
     }
 
     public function test_duplicate_submission_shows_banner_only_when_name_matches(): void
@@ -117,9 +117,9 @@ class AssessmentFlowTest extends TestCase
     public function test_admin_pages_render_with_sidebar(): void
     {
         $this->admin();
-        $q = $this->cycle->questions()->first();
+        $q = $this->period->questions()->first();
 
-        foreach (['/admin', '/admin/cycles', "/admin/cycles/{$this->cycle->id}/questions", '/admin/assessments',
+        foreach (['/admin', '/admin/assessment-periods', "/admin/assessment-periods/{$this->period->id}/questions", '/admin/assessments',
                   '/admin/departments', '/admin/departments/create', '/admin/positions', '/admin/positions/create'] as $url) {
             $this->get($url)->assertOk()->assertSee('id="sidebar"', false)->assertSee('Master Data');
         }

@@ -11,22 +11,22 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class AssessmentsExport implements FromQuery, WithHeadings, WithMapping
 {
-    /** Questions become extra columns only when a single cycle is selected. */
+    /** Questions become extra columns only when a single period is selected. */
     private $questions;
 
     public function __construct(private array $filters = [])
     {
-        $this->questions = empty($filters['cycle'])
+        $this->questions = empty($filters['period'])
             ? collect()
-            : Question::where('assessment_cycle_id', $filters['cycle'])->orderBy('order_no')->orderBy('id')->get();
+            : Question::where('assessment_period_id', $filters['period'])->orderBy('order_no')->orderBy('id')->get();
     }
 
     public static function baseQuery(array $filters): Builder
     {
         return Assessment::query()
-            ->with(['user', 'cycle'])
+            ->with(['user', 'period'])
             ->where('status', 'submitted')
-            ->when($filters['cycle'] ?? null, fn ($q, $v) => $q->where('assessment_cycle_id', $v))
+            ->when($filters['period'] ?? null, fn ($q, $v) => $q->where('assessment_period_id', $v))
             ->when($filters['department'] ?? null, fn ($q, $v) => $q->whereHas('user', fn ($u) => $u->where('department', $v)))
             ->latest('submitted_at');
     }
@@ -39,7 +39,7 @@ class AssessmentsExport implements FromQuery, WithHeadings, WithMapping
     public function headings(): array
     {
         return array_merge(
-            ['ID', 'Cycle', 'Employee ID', 'Name', 'Email', 'Position', 'Department', 'Submitted At'],
+            ['ID', 'Assessment Period', 'Employee ID', 'Name', 'Email', 'Position', 'Department', 'Submitted At'],
             $this->questions->map(fn ($q) => $q->question_en)->all()
         );
     }
@@ -50,7 +50,7 @@ class AssessmentsExport implements FromQuery, WithHeadings, WithMapping
 
         return array_merge([
             $assessment->id,
-            $assessment->cycle->title,
+            $assessment->period->title,
             $assessment->user->employee_id,
             self::safe($assessment->user->name),
             $assessment->user->email,

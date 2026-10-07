@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\AssessmentsExport;
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
-use App\Models\AssessmentCycle;
+use App\Models\AssessmentPeriod;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -22,7 +22,7 @@ class AssessmentController extends Controller
 
         return view('admin.assessments.index', [
             'assessments' => AssessmentsExport::baseQuery($filters)->paginate(20)->withQueryString(),
-            'cycles' => AssessmentCycle::orderBy('title')->get(),
+            'periods' => AssessmentPeriod::orderBy('title')->get(),
             'departments' => User::whereNotNull('department')->distinct()->orderBy('department')->pluck('department'),
             'filters' => $filters,
         ]);
@@ -52,14 +52,14 @@ class AssessmentController extends Controller
     private function filters(Request $request): array
     {
         return $request->validate([
-            'cycle' => ['nullable', 'integer'],
+            'period' => ['nullable', 'integer'],
             'department' => ['nullable', 'string', 'max:255'],
         ]);
     }
 
     private function detail(Assessment $assessment): array
     {
-        $assessment->load(['user', 'cycle', 'answers.question']);
+        $assessment->load(['user', 'period', 'answers.question']);
 
         return [
             'assessment' => $assessment,
