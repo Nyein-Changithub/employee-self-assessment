@@ -4,8 +4,8 @@
 @endphp
 @section('title', $period->title)
 @section('content')
-<div class="flex items-center justify-between">
-    <h1 class="text-xl font-semibold">{{ $period->title }} — {{ __('Questions') }}</h1>
+<div class="flex flex-wrap items-center justify-between gap-3">
+    <h1 class="min-w-0 break-words text-xl font-semibold">{{ $period->title }} — {{ __('Questions') }}</h1>
     <a href="{{ route('admin.periods.index') }}" class="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 px-4 py-2 text-sm">← {{ __('Back') }}</a>
 </div>
 
@@ -19,31 +19,38 @@
 @endif
 
 @forelse ($questions as $question)
-    <div class="relative" data-row>
-        <details class="bg-white rounded-xl shadow-sm">
-            <summary class="p-4 pr-52 cursor-pointer">
-                <span><span class="text-slate-400 mr-2">Q: {{ $question->order_no }}</span>{{ $question->question_en }}
-                    @unless ($question->is_active)<span class="ml-2 text-xs rounded bg-slate-200 px-2 py-0.5">inactive</span>@endunless
-                </span>
-            </summary>
-            <div class="p-4 border-t">
-                <form method="POST" action="{{ route('admin.questions.update', $question) }}" class="space-y-3">
-                    @csrf @method('PUT')
-                    @include('admin.questions._fields', ['q' => $question, 'nextOrder' => null])
-                    <button class="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm">{{ __('Save') }}</button>
+    <div x-data="{ open: {{ old('_question') == $question->id ? 'true' : 'false' }} }" class="rounded-xl bg-white shadow-sm">
+        <div class="flex flex-wrap items-start justify-between gap-3 p-4">
+            <div class="min-w-0 flex-1">
+                <p class="break-words font-medium">
+                    <span class="mr-2 text-slate-400">Q: {{ $question->order_no }}</span>{{ $question->question_en }}
+                    @unless ($question->is_active)<span class="ml-2 rounded bg-slate-200 px-2 py-0.5 text-xs font-normal">{{ __('Inactive') }}</span>@endunless
+                </p>
+                <p class="mt-1 break-words text-sm text-slate-500">{{ $question->question_mm }}</p>
+            </div>
+            <div class="flex shrink-0 items-center gap-2 text-sm">
+                <button type="button" @click="open = !open" :aria-expanded="open"
+                        class="rounded-lg border border-indigo-300 px-3 py-1 text-indigo-700 hover:bg-indigo-50">{{ __('Edit') }}</button>
+                <form method="POST" action="{{ route('admin.questions.destroy', $question) }}"
+                      data-confirm
+                      data-confirm-title="{{ __('Delete question?') }}"
+                      data-confirm-item="{{ $question->question_en }}"
+                      data-confirm-message="{{ __('This cannot be undone. Any submitted answers to this question will also be permanently deleted.') }}"
+                      data-confirm-ok="{{ __('Yes, delete') }}">
+                    @csrf @method('DELETE')
+                    <button class="rounded-lg border border-red-300 px-3 py-1 text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
                 </form>
             </div>
-        </details>
-        <div class="absolute top-3 right-4 flex items-center gap-3 text-sm">
-            <button type="button" data-toggle-details class="rounded-lg border border-indigo-300 text-indigo-700 hover:bg-indigo-50 px-3 py-1">{{ __('Edit') }}</button>
-            <form method="POST" action="{{ route('admin.questions.destroy', $question) }}"
-                  data-confirm
-                  data-confirm-title="{{ __('Delete question?') }}"
-                  data-confirm-item="{{ $question->question_en }}"
-                  data-confirm-message="{{ __('This cannot be undone. Any submitted answers to this question will also be permanently deleted.') }}"
-                  data-confirm-ok="{{ __('Yes, delete') }}">
-                @csrf @method('DELETE')
-                <button class="rounded-lg border border-red-300 text-red-600 hover:bg-red-50 px-3 py-1">{{ __('Delete') }}</button>
+        </div>
+        <div x-show="open" x-cloak x-transition.opacity.duration.150ms class="border-t p-4">
+            <form method="POST" action="{{ route('admin.questions.update', $question) }}" class="space-y-3">
+                @csrf @method('PUT')
+                <input type="hidden" name="_question" value="{{ $question->id }}">
+                @include('admin.questions._fields', ['q' => $question, 'nextOrder' => null])
+                <div class="flex gap-2">
+                    <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700">{{ __('Save') }}</button>
+                    <button type="button" @click="open = false" class="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50">{{ __('Cancel') }}</button>
+                </div>
             </form>
         </div>
     </div>

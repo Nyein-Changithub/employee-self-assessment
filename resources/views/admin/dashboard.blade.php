@@ -6,7 +6,7 @@
 @section('content')
 <h1 class="text-xl font-semibold">{{ __('Dashboard') }}</h1>
 
-<div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
     @foreach ($stats as $stat)
         <a href="{{ route($stat['route']) }}" class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow">
             <div class="text-sm text-slate-500">{{ __($stat['label']) }}</div>
