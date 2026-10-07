@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@php
+    $breadcrumbs = [[__('Home'), route('admin.dashboard')], [__('Assessment Periods'), null]];
+@endphp
 @section('content')
 <h1 class="text-xl font-semibold">{{ __('Assessment Periods') }}</h1>
 

@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@php
+    $breadcrumbs = [[__('Home'), route('admin.dashboard')], [__($labels['plural']), route("admin.{$type}.index")], [__('Create'), null]];
+@endphp
 @section('title', __($labels['create']))
 @section('content')
 <div>

@@ -128,5 +128,8 @@
     "Email Address": "Email Address",
     "Role": "Role",
     "Account Created": "Account Created",
-    "Close": "Close"
+    "Close": "Close",
+    "Home": "Home",
+    "Create": "Create",
+    "Breadcrumb": "Breadcrumb"
 }

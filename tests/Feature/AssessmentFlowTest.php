@@ -121,7 +121,8 @@ class AssessmentFlowTest extends TestCase
 
         foreach (['/admin', '/admin/assessment-periods', "/admin/assessment-periods/{$this->period->id}/questions", '/admin/assessments',
                   '/admin/departments', '/admin/departments/create', '/admin/positions', '/admin/positions/create'] as $url) {
-            $this->get($url)->assertOk()->assertSee('id="sidebar"', false)->assertSee('Master Data');
+            $this->get($url)->assertOk()->assertSee('id="sidebar"', false)->assertSee('Master Data')
+                ->assertSee('aria-label="Breadcrumb"', false);
         }
     }
 

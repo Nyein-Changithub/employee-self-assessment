@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@php
+    $breadcrumbs = [[__('Home'), null]];
+@endphp
 @section('title', __('Dashboard'))
 @section('content')
 <h1 class="text-xl font-semibold">{{ __('Dashboard') }}</h1>

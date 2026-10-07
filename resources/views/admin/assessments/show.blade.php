@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@php
+    $breadcrumbs = [[__('Home'), route('admin.dashboard')], [__('Submissions'), route('admin.assessments.index')], [$assessment->user->name, null]];
+@endphp
 @section('title', $assessment->user->name)
 @section('content')
 <div class="flex flex-wrap items-center justify-between gap-2 print:hidden">

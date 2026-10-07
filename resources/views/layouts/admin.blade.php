@@ -85,6 +85,7 @@
         </header>
 
         <main class="mx-auto w-full max-w-6xl space-y-4 p-4 sm:p-6">
+            <x-breadcrumbs :items="$breadcrumbs ?? []" />
             @include('partials.flash')
             @yield('content')
         </main>

@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@php
+    $breadcrumbs = [[__('Home'), route('admin.dashboard')], [__($labels['plural']), null]];
+@endphp
 @section('title', __($labels['plural']))
 @section('content')
 @php

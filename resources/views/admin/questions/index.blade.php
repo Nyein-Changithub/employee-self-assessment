@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@php
+    $breadcrumbs = [[__('Home'), route('admin.dashboard')], [__('Assessment Periods'), route('admin.periods.index')], [$period->title, null], [__('Questions'), null]];
+@endphp
 @section('title', $period->title)
 @section('content')
 <div class="flex items-center justify-between">

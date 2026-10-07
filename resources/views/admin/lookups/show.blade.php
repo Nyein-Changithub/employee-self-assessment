@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@php
+    $breadcrumbs = [[__('Home'), route('admin.dashboard')], [__($labels['plural']), route("admin.{$type}.index")], [$item->name_en, null]];
+@endphp
 @section('title', __($labels['details']))
 @section('content')
 <div class="flex flex-wrap items-start justify-between gap-3">
