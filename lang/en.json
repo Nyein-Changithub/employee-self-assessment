@@ -57,5 +57,15 @@
     "Back": "Back",
     "No submissions found.": "No submissions found.",
     "No questions yet.": "No questions yet.",
-    "Employee": "Employee"
+    "Employee": "Employee",
+    "Copy": "Copy",
+    "Copied!": "Copied!",
+    "Open": "Open",
+    "share this link with employees": "share this link with employees",
+    "This order number is already used by another question.": "This order number is already used by another question.",
+    "Delete this question? Any submitted answers to it will also be permanently deleted.": "Delete this question? Any submitted answers to it will also be permanently deleted.",
+    "Cancel": "Cancel",
+    "Delete question?": "Delete question?",
+    "Yes, delete": "Yes, delete",
+    "This cannot be undone. Any submitted answers to this question will also be permanently deleted.": "This cannot be undone. Any submitted answers to this question will also be permanently deleted."
 }

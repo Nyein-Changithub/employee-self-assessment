@@ -57,5 +57,15 @@
     "Back": "နောက်သို့",
     "No submissions found.": "တင်သွင်းမှု မတွေ့ပါ။",
     "No questions yet.": "မေးခွန်း မရှိသေးပါ။",
-    "Employee": "ဝန်ထမ်း"
+    "Employee": "ဝန်ထမ်း",
+    "Copy": "ကူးယူမည်",
+    "Copied!": "ကူးယူပြီး!",
+    "Open": "ဖွင့်မည်",
+    "share this link with employees": "ဤလင့်ခ်ကို ဝန်ထမ်းများသို့ ပေးပို့ပါ",
+    "This order number is already used by another question.": "ဤအစဉ်နံပါတ်ကို အခြားမေးခွန်းတစ်ခုက အသုံးပြုပြီးဖြစ်သည်။",
+    "Delete this question? Any submitted answers to it will also be permanently deleted.": "ဤမေးခွန်းကို ဖျက်မလား။ တင်သွင်းပြီးသော အဖြေများပါ အပြီးအပိုင် ဖျက်သွားမည်ဖြစ်သည်။",
+    "Cancel": "မလုပ်တော့ပါ",
+    "Delete question?": "မေးခွန်းကို ဖျက်မလား။",
+    "Yes, delete": "ဟုတ်ကဲ့၊ ဖျက်မည်",
+    "This cannot be undone. Any submitted answers to this question will also be permanently deleted.": "ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍မရပါ။ ဤမေးခွန်းအတွက် တင်သွင်းပြီးသော အဖြေများပါ အပြီးအပိုင် ဖျက်သွားမည်ဖြစ်သည်။"
 }
