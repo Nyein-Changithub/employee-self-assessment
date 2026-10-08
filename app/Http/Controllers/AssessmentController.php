@@ -21,26 +21,6 @@ class AssessmentController extends Controller
     {
         $period = AssessmentPeriod::where('slug', $slug)->firstOrFail();
 
-        // Show the receipt only once, immediately after a submission attempt.
-        // A later visit to the shared link must show a fresh form for the next employee.
-        $showReceipt = session()->has('just_submitted') || session()->has('already_submitted');
-        $assessmentId = $showReceipt ? session()->pull('submitted_assessment_id') : null;
-        if ($assessmentId) {
-            $assessment = Assessment::with(['user', 'answers.question'])
-                ->where('id', $assessmentId)
-                ->where('assessment_period_id', $period->id)
-                ->where('status', 'submitted')
-                ->first();
-
-            if ($assessment) {
-                return view('assessment.readonly', [
-                    'period' => $period,
-                    'assessment' => $assessment,
-                    'answers' => $assessment->answers->sortBy('question.order_no'),
-                ]);
-            }
-        }
-
         abort_unless($period->is_active, 404);
 
         return view('assessment.form', [
@@ -48,6 +28,13 @@ class AssessmentController extends Controller
             'questions' => $period->questions()->where('is_active', true)->get(),
             'departments' => Department::where('is_active', true)->orderBy('name_en')->get(),
             'positions' => Position::where('is_active', true)->orderBy('name_en')->get(),
+        ]);
+    }
+
+    public function success(string $slug): View
+    {
+        return view('assessment.success', [
+            'period' => AssessmentPeriod::where('slug', $slug)->firstOrFail(),
         ]);
     }
 
@@ -96,9 +83,7 @@ class AssessmentController extends Controller
                 $this->mismatch();
             }
 
-            session(['submitted_assessment_id' => $existing->id]);
-
-            return redirect()->route('assessment.show', $slug)
+            return redirect()->route('assessment.success', $slug)
                 ->with('already_submitted', true);
         }
 
@@ -142,14 +127,10 @@ class AssessmentController extends Controller
                 $this->mismatch();
             }
 
-            session(['submitted_assessment_id' => $assessment->id]);
-
-            return redirect()->route('assessment.show', $slug)->with('already_submitted', true);
+            return redirect()->route('assessment.success', $slug)->with('already_submitted', true);
         }
 
-        session(['submitted_assessment_id' => $assessment->id]);
-
-        return redirect()->route('assessment.show', $slug)->with('just_submitted', true);
+        return redirect()->route('assessment.success', $slug)->with('just_submitted', true);
     }
 
     /**

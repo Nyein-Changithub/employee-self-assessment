@@ -24,6 +24,7 @@ Route::get('/lang/{locale}', function (string $locale) {
 
 // Employee form (no pre-verification)
 Route::get('/assessment/{slug}', [AssessmentController::class, 'show'])->name('assessment.show');
+Route::get('/assessment/{slug}/submitted', [AssessmentController::class, 'success'])->name('assessment.success');
 Route::post('/assessment/{slug}/submit', [AssessmentController::class, 'submit'])
     ->middleware('throttle:20,1')
     ->name('assessment.submit');

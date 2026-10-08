@@ -181,5 +181,6 @@
     "Pagination Navigation": "Pagination Navigation",
     "Go to page :page": "Go to page :page",
     "Question :number": "Question :number",
-    "Submit another response": "Submit another response"
+    "Submission complete": "Submission complete",
+    "You may now close this tab.": "You may now close this tab."
 }

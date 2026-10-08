@@ -67,19 +67,22 @@ class AssessmentFlowTest extends TestCase
 
     public function test_email_is_optional_and_submission_is_locked(): void
     {
-        $this->submit()->assertRedirect("/assessment/{$this->period->slug}")->assertSessionHas('just_submitted');
+        $this->submit()->assertRedirect("/assessment/{$this->period->slug}/submitted")->assertSessionHas('just_submitted');
 
         $user = User::where('employee_id', 'TEST-9001')->firstOrFail();
         $this->assertNull($user->email);
         $this->assertSame('ZZ Test Dept', $user->department);
         $this->assertSame(1, $user->assessments()->count());
 
-        // The receipt is shown once, then the shared link becomes available to
-        // the next employee even in the same browser session.
-        $this->get("/assessment/{$this->period->slug}")
+        // The dedicated success page never exposes employee details or answers.
+        $this->get("/assessment/{$this->period->slug}/submitted")
             ->assertOk()
-            ->assertSee('My answer')
-            ->assertSee('Submit another response');
+            ->assertSee('Submission complete')
+            ->assertSee('Your assessment was submitted successfully.')
+            ->assertDontSee('My answer')
+            ->assertDontSee('TEST-9001');
+
+        // Opening the original shared link again gives the next employee a form.
         $this->get("/assessment/{$this->period->slug}")
             ->assertOk()
             ->assertSee('Submit Assessment')
@@ -88,7 +91,7 @@ class AssessmentFlowTest extends TestCase
         $this->submit([
             'name' => 'Second Employee',
             'employee_id' => ' test-9002 ',
-        ])->assertSessionHasNoErrors();
+        ])->assertRedirect("/assessment/{$this->period->slug}/submitted")->assertSessionHasNoErrors();
         $this->assertDatabaseHas('users', ['employee_id' => 'TEST-9002']);
         $this->assertSame(2, Assessment::where('assessment_period_id', $this->period->id)->count());
     }

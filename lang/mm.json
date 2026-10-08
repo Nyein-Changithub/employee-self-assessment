@@ -181,5 +181,6 @@
     "Pagination Navigation": "စာမျက်နှာ လမ်းညွှန်",
     "Go to page :page": ":page စာမျက်နှာသို့ သွားမည်",
     "Question :number": "မေးခွန်း :number",
-    "Submit another response": "နောက်တစ်ဦးအတွက် ထပ်မံဖြည့်မည်"
+    "Submission complete": "တင်သွင်းမှု ပြီးမြောက်ပါပြီ",
+    "You may now close this tab.": "ယခု tab ကို ပိတ်နိုင်ပါပြီ။"
 }
