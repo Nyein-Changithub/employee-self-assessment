@@ -12,8 +12,8 @@ class AuthController extends Controller
 {
     public function showLogin(): View|RedirectResponse
     {
-        if (Auth::check() && Auth::user()->isAdminRole()) {
-            return redirect()->route('admin.dashboard');
+        if (Auth::check() && ($home = Auth::user()->homeRoute())) {
+            return redirect()->route($home);
         }
 
         return view('admin.login');

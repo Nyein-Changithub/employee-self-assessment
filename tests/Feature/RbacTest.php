@@ -78,6 +78,7 @@ class RbacTest extends TestCase
 
         $this->staff('gm');
         $this->post('/admin/login', ['email' => 'u-gm-rbac@x.com', 'password' => 'secret123'])->assertRedirect('/admin');
+        $this->get('/admin/login')->assertRedirect('/admin');
         $this->post('/admin/logout');
 
         // A role with zero permissions has nowhere to land, so it is turned away with a clear message.
@@ -90,6 +91,7 @@ class RbacTest extends TestCase
         Role::create(['name' => 'Auditor', 'guard_name' => 'web'])->givePermissionTo('submissions.view');
         User::create(['name' => 'A', 'email' => 'a-rbac@x.com', 'password' => 'secret123', 'role' => 'Auditor'])->assignRole('Auditor');
         $this->post('/admin/login', ['email' => 'a-rbac@x.com', 'password' => 'secret123'])->assertRedirect('/admin/assessments');
+        $this->get('/admin/login')->assertRedirect('/admin/assessments');
     }
 
     public function test_employee_form_refuses_staff_accounts(): void
