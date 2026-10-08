@@ -9,6 +9,9 @@
         <div class="mt-3 rounded-lg bg-green-50 border border-green-200 text-green-800 px-4 py-3 text-sm">{{ __('Your assessment was submitted successfully.') }}</div>
     @endif
     <p class="text-sm text-slate-500 mt-2">{{ __('Submitted at') }}: {{ $assessment->submitted_at->format('Y-m-d H:i') }}</p>
+    <a href="{{ route('assessment.show', $period->slug) }}" class="mt-4 inline-flex rounded-lg border border-indigo-300 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50">
+        {{ __('Submit another response') }}
+    </a>
 </div>
 
 @include('partials.readonly-body', ['assessment' => $assessment, 'answers' => $answers])

@@ -21,8 +21,10 @@ class AssessmentController extends Controller
     {
         $period = AssessmentPeriod::where('slug', $slug)->firstOrFail();
 
-        // Read-only view: only for the assessment this browser session submitted.
-        $assessmentId = session('submitted_assessment_id');
+        // Show the receipt only once, immediately after a submission attempt.
+        // A later visit to the shared link must show a fresh form for the next employee.
+        $showReceipt = session()->has('just_submitted') || session()->has('already_submitted');
+        $assessmentId = $showReceipt ? session()->pull('submitted_assessment_id') : null;
         if ($assessmentId) {
             $assessment = Assessment::with(['user', 'answers.question'])
                 ->where('id', $assessmentId)
@@ -53,6 +55,13 @@ class AssessmentController extends Controller
     {
         $period = AssessmentPeriod::where('slug', $slug)->firstOrFail();
         $questions = $period->questions()->where('is_active', true)->get();
+
+        $email = trim((string) $request->input('email', ''));
+        $request->merge([
+            'name' => trim((string) $request->input('name', '')),
+            'employee_id' => mb_strtoupper(trim((string) $request->input('employee_id', ''))),
+            'email' => $email === '' ? null : mb_strtolower($email),
+        ]);
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
@@ -95,11 +104,11 @@ class AssessmentController extends Controller
 
         abort_unless($period->is_active, 404);
 
-        // Profile is only written once we know this is a genuine new submission.
-        $user = $this->saveProfile($user, $data);
-
         try {
             $assessment = DB::transaction(function () use ($user, $period, $questions, $data) {
+                // Profile is only written once we know this is a genuine new submission.
+                $user = $this->saveProfile($user, $data);
+
                 $assessment = Assessment::create([
                     'assessment_period_id' => $period->id,
                     'user_id' => $user->id,
@@ -116,10 +125,23 @@ class AssessmentController extends Controller
 
                 return $assessment;
             });
-        } catch (UniqueConstraintViolationException) {
-            // Concurrent double-submit: the other request won.
-            $assessment = Assessment::where('user_id', $user->id)
-                ->where('assessment_period_id', $period->id)->firstOrFail();
+        } catch (UniqueConstraintViolationException $exception) {
+            // Concurrent double-submit: the other request won. Re-resolve the
+            // normalized identity because it may have created the user as well.
+            $user = $this->findUser($data);
+            $assessment = $user
+                ? Assessment::where('user_id', $user->id)
+                    ->where('assessment_period_id', $period->id)
+                    ->first()
+                : null;
+
+            if (! $assessment) {
+                throw $exception;
+            }
+            if (mb_strtolower(trim($data['name'])) !== mb_strtolower(trim($user->name))) {
+                $this->mismatch();
+            }
+
             session(['submitted_assessment_id' => $assessment->id]);
 
             return redirect()->route('assessment.show', $slug)->with('already_submitted', true);

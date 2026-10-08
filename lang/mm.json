@@ -180,5 +180,6 @@
     "PDF": "PDF",
     "Pagination Navigation": "စာမျက်နှာ လမ်းညွှန်",
     "Go to page :page": ":page စာမျက်နှာသို့ သွားမည်",
-    "Question :number": "မေးခွန်း :number"
+    "Question :number": "မေးခွန်း :number",
+    "Submit another response": "နောက်တစ်ဦးအတွက် ထပ်မံဖြည့်မည်"
 }

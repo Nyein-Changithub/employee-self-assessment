@@ -55,7 +55,11 @@ class AssessmentFlowTest extends TestCase
     public function test_form_renders_dropdowns_in_both_languages(): void
     {
         $this->get("/assessment/{$this->period->slug}")
-            ->assertOk()->assertSee('<option value="ZZ Test Dept"', false)->assertSee('ZZ Test Pos');
+            ->assertOk()
+            ->assertSee('<option value="ZZ Test Dept"', false)
+            ->assertSee('ZZ Test Pos')
+            ->assertSee('<details open', false)
+            ->assertSee('<summary', false);
 
         $this->withSession(['locale' => 'mm'])->get("/assessment/{$this->period->slug}")
             ->assertOk()->assertSee('ZZ-dept-mm')->assertSee('ZZ-pos-mm');
@@ -70,7 +74,23 @@ class AssessmentFlowTest extends TestCase
         $this->assertSame('ZZ Test Dept', $user->department);
         $this->assertSame(1, $user->assessments()->count());
 
-        $this->get("/assessment/{$this->period->slug}")->assertOk()->assertSee('My answer');
+        // The receipt is shown once, then the shared link becomes available to
+        // the next employee even in the same browser session.
+        $this->get("/assessment/{$this->period->slug}")
+            ->assertOk()
+            ->assertSee('My answer')
+            ->assertSee('Submit another response');
+        $this->get("/assessment/{$this->period->slug}")
+            ->assertOk()
+            ->assertSee('Submit Assessment')
+            ->assertDontSee('My answer');
+
+        $this->submit([
+            'name' => 'Second Employee',
+            'employee_id' => ' test-9002 ',
+        ])->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('users', ['employee_id' => 'TEST-9002']);
+        $this->assertSame(2, Assessment::where('assessment_period_id', $this->period->id)->count());
     }
 
     public function test_duplicate_submission_shows_banner_only_when_name_matches(): void

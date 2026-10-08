@@ -53,29 +53,33 @@
     </section>
 
     @foreach ($questions as $question)
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <details open class="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             {{-- Question --}}
-            <div class="flex gap-3 bg-indigo-50 border-b border-indigo-100 px-5 py-4">
-                <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">Q{{ $loop->iteration }}</span>
-                <div class="min-w-0">
+            <summary class="flex cursor-pointer list-none items-start gap-3 bg-indigo-50 px-5 py-4 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-600 [&::-webkit-details-marker]:hidden">
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">Q{{ $loop->iteration }}</span>
+                <div class="min-w-0 flex-1">
                     <p class="font-semibold text-slate-900 break-words">{{ $question->text() }} <span class="text-red-500">*</span></p>
                     @if ($question->guide())
                         <p class="mt-1 text-sm text-slate-600">{{ $question->guide() }}</p>
                     @endif
                 </div>
-            </div>
+                <svg class="mt-1.5 h-5 w-5 shrink-0 text-indigo-600 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/>
+                </svg>
+            </summary>
             {{-- Answer --}}
-            <div class="p-5">
+            <div class="border-t border-indigo-100 p-5">
                 <label for="answer-{{ $question->id }}" class="mb-2 flex items-center gap-2 text-sm font-medium text-emerald-700">
                     <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-xs font-semibold text-white">A</span>
                     {{ __('Your answer') }}
                 </label>
                 <textarea id="answer-{{ $question->id }}" name="answers[{{ $question->id }}]" rows="4" required
+                          oninvalid="this.closest('details').open = true"
                           placeholder="{{ __('Type your answer here...') }}"
                           class="w-full rounded-lg border-2 border-emerald-200 bg-emerald-50/40 px-3 py-2 focus:border-emerald-500 focus:bg-white focus:outline-none">{{ old("answers.{$question->id}") }}</textarea>
                 @error("answers.{$question->id}")<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
             </div>
-        </section>
+        </details>
     @endforeach
 
     <button class="w-full sm:w-auto rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3">
