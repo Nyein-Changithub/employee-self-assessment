@@ -1,4 +1,4 @@
-bb<?php
+<?php
 
 // Vercel entry point: Vercel's filesystem is read-only except /tmp,
 // so Laravel's writable folders are created there before booting.
