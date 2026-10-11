@@ -18,7 +18,7 @@ A lightweight, enterprise-ready Employee Self-Assessment web application built w
 |------------------|--------------------------------------|
 | PHP              | 8.4                                  |
 | Framework        | Laravel 12.x                         |
-| Database         | MySQL 8.0                            |
+| Database         | MySQL 8.0 (local) / PostgreSQL via Supabase (production) |
 | Frontend         | Blade + Tailwind CSS 4 (Vite 7) + Alpine.js 3 |
 | RBAC             | `spatie/laravel-permission` ^8.3     |
 | Excel / CSV      | `maatwebsite/excel` ^4.0             |
@@ -29,7 +29,7 @@ A lightweight, enterprise-ready Employee Self-Assessment web application built w
 - PHP 8.4 with extensions: `pdo_mysql`, `mbstring`, `xml`, `gd`, `zip`
 - Composer 2
 - Node.js 20+ and npm
-- MySQL 8.0
+- MySQL 8.0 (or PostgreSQL with the `pdo_pgsql` extension)
 
 ## Installation
 
@@ -129,6 +129,83 @@ When a single period is selected in the submissions filter, exports include one 
 Safeguards: you cannot delete yourself or change your own role; the last admin cannot be demoted or deleted; only an admin can assign the `admin` role or edit admin accounts; the built-in roles and permissions cannot be renamed or deleted (routes depend on their names); a role that still has users cannot be deleted. A role with no permissions cannot sign in.
 
 The `users.role` column mirrors the user's assigned role (or `employee` when none) so the employee form and dashboard keep working; Spatie is the source of truth for access.
+
+## Deployment (Vercel + Supabase)
+
+The app runs on [Vercel](https://vercel.com) (community `vercel-php` runtime) with a [Supabase](https://supabase.com) PostgreSQL database.
+
+### Files that make it work
+
+| File | Purpose |
+|------|---------|
+| `vercel.json` | PHP runtime, build command (`npm run build`), routing, and production defaults (`APP_ENV`, cookie sessions, `/tmp` storage paths) |
+| `api/index.php` | Vercel entry point. Creates Laravel's writable folders in `/tmp` (Vercel's disk is read-only), then loads `public/index.php`. Nothing may be output before `<?php`. |
+| `.vercelignore` | Keeps `vendor`, `node_modules` and `.env` out of the upload |
+| `AppServiceProvider` | Forces `https` URLs in production (Vercel's proxy makes requests look like `http`, which blocks CSS/JS as mixed content) |
+
+### 1. Create the Supabase database
+
+1. Create a project at supabase.com and set a database password (letters and numbers only is safest).
+2. Click **Connect** and choose **Session pooler** (not *Direct connection*; Vercel has no IPv6 and cannot reach the direct host).
+3. Note the pooler host (`aws-0-<region>.pooler.supabase.com`), port `5432`, database `postgres`, and user `postgres.<project-ref>`.
+
+### 2. Migrate and seed the database (from your computer)
+
+Install the PostgreSQL PHP driver once (`sudo apt install php8.4-pgsql`; check with `php -m | grep pgsql`). Temporarily point your local `.env` at Supabase:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=aws-0-<region>.pooler.supabase.com
+DB_PORT=5432
+DB_DATABASE=postgres
+DB_USERNAME=postgres.<project-ref>
+DB_PASSWORD=<your-supabase-password>
+```
+
+```bash
+php artisan config:clear
+php artisan migrate --force
+php artisan db:seed --force
+```
+
+Check the tables in Supabase → **Table Editor**. Switch your `.env` back to your local database afterwards.
+
+### 3. Deploy on Vercel
+
+1. Push the repository to GitHub.
+2. In Vercel choose **Add New → Project**, install the GitHub app, and import the repository.
+3. Set **Application Preset** to **Other** (Vercel guesses *Vite*; that is wrong for Laravel). Leave Build and Output Settings alone; `vercel.json` sets them.
+4. Add these **Environment Variables** (Production). Get `APP_KEY` with `php artisan key:generate --show`:
+
+   | Key | Value |
+   |-----|-------|
+   | `APP_KEY` | `base64:...` from the command above |
+   | `APP_URL` | `https://<your-project>.vercel.app` |
+   | `DB_HOST` | Supabase pooler host |
+   | `DB_PORT` | `5432` |
+   | `DB_DATABASE` | `postgres` |
+   | `DB_USERNAME` | `postgres.<project-ref>` |
+   | `DB_PASSWORD` | your Supabase password |
+
+   Environment variables only apply to **new** deployments, so redeploy after changing any of them (**Deployments → ⋯ → Redeploy**).
+5. Click **Deploy**. Every later `git push` to `main` redeploys automatically.
+
+### Troubleshooting
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| Browser downloads a file instead of showing the page | `public/index.php` served as a static file. Keep the `"/"` and `"/index.php"` routes in `vercel.json` ahead of `"handle": "filesystem"`. |
+| `500 SERVER ERROR` | Open Vercel → **Logs**. *No application encryption key* means `APP_KEY` is missing or the project was not redeployed after adding it. |
+| Page has no CSS or JS | Assets are linked as `http://` on an `https://` page. Check the https redirect in `AppServiceProvider` and that `APP_URL` starts with `https://`. |
+| Stray text at the top of every page | Something is output before `<?php` in `api/index.php`. |
+| `could not find driver` | Install `php8.4-pgsql` locally. |
+| Cannot connect to the database | Use the **pooler** host and the `postgres.<project-ref>` username, not `postgres`. |
+
+### Limits on Vercel
+
+- The filesystem is read-only except `/tmp`, which is wiped between requests. Do not store uploads on local disk; use object storage (for example Supabase Storage) if you add uploads.
+- Sessions use cookies, the cache uses `array`, and queues run `sync`. Queue workers do not run on Vercel.
+- Never commit `.env`, and never paste database passwords or `APP_KEY` into chats or issues. If one leaks, rotate it (Supabase → **Reset database password**) and update Vercel.
 
 ## Localization
 
